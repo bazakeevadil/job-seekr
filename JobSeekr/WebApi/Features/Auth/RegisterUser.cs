@@ -17,7 +17,7 @@ public class Controller : ControllerBase
     [SwaggerOperation("Регистрация", "Позволяет зарегистрироватся и получить доступ для просмотра")]
     [SwaggerResponse(200, "Успешно получено")]
     [SwaggerResponse(400, "Ошибка валидации")]
-    public async Task<IActionResult> Register(Command command,IMediator mediator)
+    public async Task<IActionResult> Register(IMediator mediator, Command command)
     {
         if (command.Email.IsNullOrEmpty()) return BadRequest("Email is null");
         if (command.Password.IsNullOrEmpty()) return BadRequest("Password is null");
@@ -51,7 +51,7 @@ public static class RegisterUser
             var user = new User
             {
                 Email = request.Email,
-                Password = request.Password,
+                HashPassword = request.Password,
                 Role = Role.User
             };
 
