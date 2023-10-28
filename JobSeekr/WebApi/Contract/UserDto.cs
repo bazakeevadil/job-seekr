@@ -1,11 +1,10 @@
 ﻿using WebApi.Enums;
 
-namespace WebApi.Entities;
+namespace WebApi.Contract;
 
-public class User
+public record UserDto
 {
     public long Id { get; set; }
     public required string Email { get; set; }
-    public required string Password { get; set; }
     public Role Role { get; set; }
 }
