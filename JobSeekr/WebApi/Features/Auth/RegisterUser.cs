@@ -1,43 +1,16 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore.Annotations;
-using WebApi.Contract;
-using WebApi.Data;
-using WebApi.Entities;
-using WebApi.Enums;
-using static WebApi.Features.Auth.RegisterUser;
-
+﻿using Mapster;
 namespace WebApi.Features.Auth;
-
-[ApiController, Route("api/auth")]
-public class Controller : ControllerBase
-{
-    [HttpPost("register")]
-    [SwaggerOperation("Регистрация", "Позволяет зарегистрироватся и получить доступ для просмотра")]
-    [SwaggerResponse(200, "Успешно получено")]
-    [SwaggerResponse(400, "Ошибка валидации")]
-    public async Task<IActionResult> Register(IMediator mediator, Command command)
-    {
-        if (command.Email.IsNullOrEmpty()) return BadRequest("Email is null");
-        if (command.Password.IsNullOrEmpty()) return BadRequest("Password is null");
-
-        var response = await mediator.Send(command);
-
-        return Ok(response);
-    }
-}
 
 public static class RegisterUser
 {
-    public record Command : IRequest<UserDto>
+    public record Command : IRequest<Result<UserDto>>
     {
         public required string Email { get; init; }
 
         public required string Password { get; init; }
     }
 
-    internal class Handler : IRequestHandler<Command, UserDto>
+    internal class Handler : IRequestHandler<Command, Result<UserDto>>
     {
         private readonly AppDbContext _appDbContext;
 
@@ -46,24 +19,24 @@ public static class RegisterUser
             _appDbContext = appDbContext;
         }
 
-        public async Task<UserDto> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<UserDto>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var user = new User
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user is not null)
+                return Result.Bad<UserDto>("Пользователь с таким адресом почты уже существует.");
+
+            user = new User
             {
                 Email = request.Email,
-                HashPassword = request.Password,
+                HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 Role = Role.User
             };
 
             _appDbContext.Users.Add(user);
             await _appDbContext.SaveChangesAsync();
 
-            var response = new UserDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                Role = user.Role,
-            };
+            var response = user.Adapt<UserDto>();
 
             return response;
         }

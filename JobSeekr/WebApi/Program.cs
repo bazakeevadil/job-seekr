@@ -9,6 +9,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddMediatr();
 
+builder.Services.AddAuth(builder.Configuration);
+builder.Services.AddSwagger();
+builder.Services.AddAnyCors();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -19,6 +23,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -1,6 +1,4 @@
-﻿using WebApi.Enums;
-
-namespace WebApi.Contract;
+﻿namespace WebApi.Contract;
 
 public record UserDto
 {

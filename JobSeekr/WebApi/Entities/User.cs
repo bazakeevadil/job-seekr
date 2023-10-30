@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebApi.Enums;
 
 namespace WebApi.Entities;
 
@@ -12,5 +11,7 @@ public class User
 
     [StringLength(200)]
     public required string HashPassword { get; set; }
+
+    public List<Resume> Summaries { get; set; } = new();
     public Role Role { get; set; }
 }

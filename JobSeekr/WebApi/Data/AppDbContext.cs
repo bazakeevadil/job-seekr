@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebApi.Entities;
-
-namespace WebApi.Data;
+﻿namespace WebApi.Data;
 
 public class AppDbContext : DbContext
 {
