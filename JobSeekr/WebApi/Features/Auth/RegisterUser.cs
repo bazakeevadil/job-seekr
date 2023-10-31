@@ -1,4 +1,6 @@
 ﻿using Mapster;
+using WebApi.Domain.Enums;
+
 namespace WebApi.Features.Auth;
 
 public static class RegisterUser

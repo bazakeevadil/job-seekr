@@ -1,4 +1,6 @@
-﻿namespace WebApi.Shared.Helpers;
+﻿using WebApi.Domain.Entities;
+
+namespace WebApi.Shared.Helpers;
 
 public static class AuthHelper
 {
