@@ -1,6 +1,4 @@
-﻿using WebApi.Domain.Entities;
-
-namespace WebApi.Data;
+﻿namespace WebApi.Data;
 
 public class AppDbContext : DbContext
 {

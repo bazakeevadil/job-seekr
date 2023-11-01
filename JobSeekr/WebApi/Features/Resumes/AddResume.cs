@@ -1,6 +1,4 @@
 ﻿using Mapster;
-using WebApi.Domain.Entities;
-using WebApi.Domain.Enums;
 
 namespace WebApi.Features.Resumes;
 

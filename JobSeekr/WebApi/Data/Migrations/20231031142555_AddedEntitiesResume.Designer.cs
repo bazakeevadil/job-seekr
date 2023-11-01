@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApi.Data;
 
@@ -11,9 +12,11 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231031142555_AddedEntitiesResume")]
+    partial class AddedEntitiesResume
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,7 +60,7 @@ namespace WebApi.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("EducationPeriods", (string)null);
+                    b.ToTable("EducationPeriods");
                 });
 
             modelBuilder.Entity("WebApi.Domain.Entities.Resume", b =>
@@ -105,7 +108,7 @@ namespace WebApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Resumes", (string)null);
+                    b.ToTable("Resumes");
                 });
 
             modelBuilder.Entity("WebApi.Domain.Entities.User", b =>
@@ -131,7 +134,7 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("WebApi.Domain.Entities.WorkPeriod", b =>
@@ -170,7 +173,7 @@ namespace WebApi.Migrations
 
                     b.HasIndex("ResumeId");
 
-                    b.ToTable("WorkPeriods", (string)null);
+                    b.ToTable("WorkPeriods");
                 });
 
             modelBuilder.Entity("WebApi.Domain.Entities.EducationPeriod", b =>

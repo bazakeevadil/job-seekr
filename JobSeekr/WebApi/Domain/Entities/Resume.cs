@@ -1,6 +1,4 @@
-﻿using WebApi.Domain.Enums;
-
-namespace WebApi.Domain.Entities;
+﻿namespace WebApi.Domain.Entities;
 
 public class Resume
 {

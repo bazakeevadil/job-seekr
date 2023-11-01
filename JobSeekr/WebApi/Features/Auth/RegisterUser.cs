@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using WebApi.Domain.Enums;
 
 namespace WebApi.Features.Auth;
 
@@ -43,4 +42,19 @@ public static class RegisterUser
             return response;
         }
     }
+    //public class Endpoint : ICarterModule
+    //{
+    //    public void AddRoutes(IEndpointRouteBuilder app)
+    //    {
+    //        app.MapPost("api/auth", async (Command command, ISender sender) =>
+    //        {
+    //            var result = await sender.Send(command);
+
+    //            if (result.IsError)
+    //                return BadRequest(result);
+
+    //            return Ok(result);
+    //        });
+    //    }
+    //}
 }

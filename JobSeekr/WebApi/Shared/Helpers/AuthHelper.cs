@@ -1,6 +1,4 @@
-﻿using WebApi.Domain.Entities;
-
-namespace WebApi.Shared.Helpers;
+﻿namespace WebApi.Shared.Helpers;
 
 public static class AuthHelper
 {
