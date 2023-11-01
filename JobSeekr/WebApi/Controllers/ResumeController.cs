@@ -20,4 +20,6 @@ public class ResumeController : ControllerBase
 
         return Ok(result);
     }
+
+
 }
