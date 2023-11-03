@@ -1,5 +1,6 @@
 using Serilog;
 using WebApi;
+using WebApi.Shared.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,10 @@ builder.Services.AddSwagger();
 builder.Services.AddAnyCors();
 builder.Services.AddCarter();
 
+builder.Services.AddScoped(
+    typeof(IPipelineBehavior<,>),
+    typeof(LoggingPipelineBehavior<,>));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -26,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 app.UseCors();
 

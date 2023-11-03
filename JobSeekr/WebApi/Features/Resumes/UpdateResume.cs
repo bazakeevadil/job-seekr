@@ -58,7 +58,7 @@ public class UpdateResumeEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPatch("api/resume/update",
+        app.MapPatch("api/resume",
             async (IMediator mediator, HttpContext httpContext, UpdateResume.Props data) =>
             {
                 var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);

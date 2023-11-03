@@ -11,6 +11,7 @@ public class User
 
     [StringLength(200)]
     public required string HashPassword { get; set; }
+    public required bool IsBlocked { get; set; }
     public Role Role { get; set; }
 
     public List<Resume> Resumes { get; set; } = new();

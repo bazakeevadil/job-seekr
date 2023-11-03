@@ -83,7 +83,7 @@ public class LoginUserEndpoint : ICarterModule
             })
             .AllowAnonymous()
             .WithSummary("Аутентификация")
-            .WithDescription("Чтобы получит доступ к endpointom нужно аутентификация чтобы понять что можно пользователю ")
+            .WithDescription("Чтобы получит доступ к endpoints нужно аутентификация чтобы понять что можно пользователю ")
             .Produces<Result>(400)
             .WithOpenApi();
     }

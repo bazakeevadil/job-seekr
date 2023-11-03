@@ -17,9 +17,9 @@ public static class RegisterUser
     internal class Handler : IRequestHandler<Command, Result<UserResponse>>
     {
         private readonly AppDbContext _appDbContext;
-        private readonly ILogger _logger;
+        private readonly ILogger<Handler> _logger;
 
-        public Handler(AppDbContext appDbContext, ILogger logger)
+        public Handler(AppDbContext appDbContext, ILogger<Handler> logger)
         {
             _appDbContext = appDbContext;
             _logger = logger;
@@ -40,6 +40,7 @@ public static class RegisterUser
             {
                 Email = request.Email,
                 HashPassword = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                IsBlocked = false,
                 Role = Role.User
             };
 

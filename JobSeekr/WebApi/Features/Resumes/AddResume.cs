@@ -60,7 +60,7 @@ public class AddResumeEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("api/resume/add",
+        app.MapPost("api/resume",
             async (IMediator mediator, AddResumeRequest request) =>
             {
                 var command = request.Adapt<AddResume.Command>();
