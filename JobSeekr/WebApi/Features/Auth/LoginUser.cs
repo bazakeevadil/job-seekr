@@ -1,7 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Mapster;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WebApi.Contract.Request;
 using WebApi.Shared.Helpers;
 
 namespace WebApi.Features.Auth;
@@ -31,7 +33,7 @@ public static class LoginUser
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user is null || !AuthHelper.CheckPassword(user, request.Password))
-                return Result.Bad<string>("Пользователь не найден или пароль указан неверно.");
+                return Result.Fail<string>("Пользователь не найден или пароль указан неверно.");
 
             var claims = new List<Claim>
                 {
@@ -60,5 +62,29 @@ public static class LoginUser
 
             return handler.WriteToken(token);
         }
+    }
+}
+
+public class LoginUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/auth/login",
+            async (IMediator mediator, LoginUserRequest request) =>
+            {
+                var query = request.Adapt<LoginUser.Query>();
+
+                var result = await mediator.Send(query);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .AllowAnonymous()
+            .WithSummary("Аутентификация")
+            .WithDescription("Чтобы получит доступ к endpointom нужно аутентификация чтобы понять что можно пользователю ")
+            .Produces<Result>(400)
+            .WithOpenApi();
     }
 }

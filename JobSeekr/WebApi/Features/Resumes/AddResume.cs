@@ -1,10 +1,13 @@
 ﻿using Mapster;
+using WebApi.Contract.Request;
+using WebApi.Contract.Response;
+using WebApi.Features.Auth;
 
 namespace WebApi.Features.Resumes;
 
 public static class AddResume
 {
-    public record Command : IRequest<Result<ResumeDto>>
+    public record Command : IRequest<Result<ResumeResponse>>
     {
         public required string FullName { get; init; }
         public required string ProgrammingLanguage { get; init; }
@@ -14,11 +17,11 @@ public static class AddResume
         public string? Links { get; init; }
         public required string Skills { get; init; }
 
-        public List<EducationPeriodDto> EducationPeriods { get; init; } = new();
-        public List<WorkPeriodDto> WorkPeriods { get; init; } = new();
+        public List<EducationPeriodResponse> EducationPeriods { get; init; } = new();
+        public List<WorkPeriodResponse> WorkPeriods { get; init; } = new();
     }
 
-    internal class Handler : IRequestHandler<Command, Result<ResumeDto>>
+    internal class Handler : IRequestHandler<Command, Result<ResumeResponse>>
     {
         private readonly AppDbContext _appDbContext;
 
@@ -27,7 +30,7 @@ public static class AddResume
             _appDbContext = appDbContext;
         }
 
-        public async Task<Result<ResumeDto>> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<ResumeResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
             var resume = new Resume
             {
@@ -46,9 +49,32 @@ public static class AddResume
             _appDbContext.Resumes.Add(resume);
             await _appDbContext.SaveChangesAsync();
 
-            var response = resume.Adapt<ResumeDto>();
+            var response = resume.Adapt<ResumeResponse>();
 
             return response;
         }
+    }
+}
+
+public class AddResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/resume/add",
+            async (IMediator mediator, AddResumeRequest request) =>
+            {
+                var command = request.Adapt<AddResume.Command>();
+
+                var result = await mediator.Send(command);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .WithSummary("Создание резюме")
+            .WithDescription("Создать резюме текушего пользователя")
+            .Produces<Result>(400)
+            .WithOpenApi();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -54,9 +55,16 @@ public static class DependencyInjection
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
                         Encoding.ASCII.GetBytes(
-                            configuration["Jwt"] ??
+                            configuration["JWT_TOKEN"] ??
                                 throw new Exception("Секретный ключ для генерации JWT не найден в файле кофигурации."))),
             };
+        });
+
+        services.AddAuthorization(opts =>
+        {
+            opts.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
         });
 
         return services;

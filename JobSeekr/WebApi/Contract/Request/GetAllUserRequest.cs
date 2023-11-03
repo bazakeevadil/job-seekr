@@ -1,6 +1,6 @@
-﻿namespace WebApi.Contract;
+﻿namespace WebApi.Contract.Request;
 
-public record UserDto
+public record GetAllUserRequest
 {
     public long Id { get; init; }
     public required string Email { get; init; }

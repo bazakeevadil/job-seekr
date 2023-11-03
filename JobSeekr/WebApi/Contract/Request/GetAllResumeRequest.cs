@@ -1,6 +1,8 @@
-﻿namespace WebApi.Contract;
+﻿using WebApi.Contract.Response;
 
-public record ResumeDto
+namespace WebApi.Contract.Request;
+
+public record GetAllResumeRequest
 {
     public long Id { get; init; }
     public long UserId { get; init; }
@@ -13,6 +15,6 @@ public record ResumeDto
     public required Status Status { get; init; }
     public required string Skills { get; init; }
 
-    public List<EducationPeriodDto> EducationPeriods { get; init; } = new();
-    public List<WorkPeriodDto> WorkPeriods { get; init; } = new();
+    public List<EducationPeriodResponse> EducationPeriods { get; init; } = new();
+    public List<WorkPeriodResponse> WorkPeriods { get; init; } = new();
 }

@@ -1,11 +1,11 @@
-﻿namespace WebApi.Contract;
+﻿namespace WebApi.Contract.Response;
 
-public record WorkPeriodDto
+public record EducationPeriodResponse
 {
     public long Id { get; init; }
     public long ResumeId { get; init; }
-    public required string Position { get; init; }
-    public required string Employer { get; init; }
+    public required string Name { get; init; }
+    public string? Degree { get; init; }
     public required string City { get; init; }
     public string? Description { get; init; }
     public DateTime From { get; init; }

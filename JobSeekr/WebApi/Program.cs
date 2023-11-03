@@ -1,8 +1,8 @@
+using Serilog;
 using WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -12,6 +12,7 @@ builder.Services.AddMediatr();
 builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddSwagger();
 builder.Services.AddAnyCors();
+builder.Services.AddCarter();
 
 var app = builder.Build();
 
@@ -28,6 +29,6 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapCarter();
 
 app.Run();
