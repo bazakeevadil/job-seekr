@@ -73,6 +73,7 @@ public class RegisterUserEndpoint : ICarterModule
             .AllowAnonymous()
             .WithSummary("Регистрация")
             .WithDescription("Чтобы получит доступ к endpointom нужно зарегистрироваться")
+            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

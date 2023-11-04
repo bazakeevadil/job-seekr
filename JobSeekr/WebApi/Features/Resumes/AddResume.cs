@@ -74,6 +74,7 @@ public class AddResumeEndpoint : ICarterModule
             })
             .WithSummary("Создание резюме")
             .WithDescription("Создать резюме текушего пользователя")
+            .Produces<ResumeResponse>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

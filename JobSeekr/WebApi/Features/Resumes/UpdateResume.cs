@@ -44,8 +44,6 @@ public static class UpdateResume
             if (user is null)
                 return Result.Fail("Пользователь не найден.");
 
-
-
             _context.Update(user);
             await _context.SaveChangesAsync();
 
@@ -77,6 +75,7 @@ public class UpdateResumeEndpoint : ICarterModule
             })
             .WithSummary("Изменить резюме")
             .WithDescription("Изменить резюме текушего пользователя")
+            .Produces<ResumeResponse>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

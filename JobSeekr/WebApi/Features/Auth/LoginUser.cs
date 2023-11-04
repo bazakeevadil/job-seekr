@@ -49,7 +49,8 @@ public static class LoginUser
 
         private string GetTokenString(List<Claim> claims, DateTime exp)
         {
-            var key = _configuration["JWT"] ?? throw new Exception("JWT not found");
+            var key = _configuration["JWT_TOKEN"]
+                ?? throw new Exception("Секретный ключ для генерации JWT не найден в файле кофигурации.");
             var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
 
             var token = new JwtSecurityToken(
@@ -84,6 +85,7 @@ public class LoginUserEndpoint : ICarterModule
             .AllowAnonymous()
             .WithSummary("Аутентификация")
             .WithDescription("Чтобы получит доступ к endpoints нужно аутентификация чтобы понять что можно пользователю ")
+            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

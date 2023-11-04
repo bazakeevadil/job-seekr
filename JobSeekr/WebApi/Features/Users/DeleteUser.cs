@@ -57,6 +57,7 @@ public class DeleteUserEndpoint : ICarterModule
             })
             .WithSummary("Удалить пользователя")
             .WithDescription("Удалить пользователя по Email")
+            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

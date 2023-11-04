@@ -64,6 +64,7 @@ public class DeleteResumeEndpoint : ICarterModule
             })
             .WithSummary("Удалить резюме")
             .WithDescription("Удалить резюме текущего пользователя по ID")
+            .Produces<ResumeResponse>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }
