@@ -1,10 +1,10 @@
-﻿namespace WebApi.Features.Users;
+﻿namespace WebApi.Features.Resumes;
 
-public static class BlockUser
+public static class RejectedResume
 {
     public record Command : IRequest<Result>
     {
-        public required string Email { get; set; }
+        public long Id { get; set; }
     }
 
     internal class Handler : IRequestHandler<Command, Result>
@@ -19,14 +19,14 @@ public static class BlockUser
         public async Task<Result> Handle(
             Command request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.Id == request.Id);
 
-            if (user is null)
-                return Result.Fail("Пользователь не найден.");
+            if (resume is null)
+                return Result.Fail("Резюме не найден.");
 
 
-            user.IsBlocked = true;
-            
+            resume.IsRejected = true;
+
             await _context.SaveChangesAsync();
 
             return Result.Ok();
@@ -34,24 +34,24 @@ public static class BlockUser
     }
 }
 
-public class BlockUserEndpoint : ICarterModule
+public class RejectedResumeEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPatch("api/user/blocked",
-            async (IMediator mediator, string email) =>
+        app.MapPatch("api/resume/rejected",
+            async (IMediator mediator, long id) =>
             {
-                var request = new BlockUser.Command
+                var request = new RejectedResume.Command
                 {
-                    Email = email,
+                    Id = id,
                 };
 
                 var result = await mediator.Send(request);
 
                 return Results.Ok(result);
             })
-            .WithSummary("Блокировать")
-            .WithDescription("Позволяет заблокировать пользователя")
+            .WithSummary("Отклонить")
+            .WithDescription("Позволяет отклонить резюме")
             .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();

@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using WebApi.Contract.Response;
-using WebApi.Features.Resumes;
+﻿using WebApi.Contract.Response;
 
 namespace WebApi.Features.Users;
 

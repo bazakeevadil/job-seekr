@@ -1,7 +1,5 @@
 ﻿using Mapster;
-using WebApi.Contract.Request;
 using WebApi.Contract.Response;
-using WebApi.Features.Resumes;
 
 namespace WebApi.Features.Users;
 

@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using WebApi.Contract.Request;
 using WebApi.Contract.Response;
-using WebApi.Features.Auth;
 
 namespace WebApi.Features.Resumes;
 
@@ -35,6 +34,7 @@ public static class AddResume
             var resume = new Resume
             {
                 Status = Status.Pending,
+                IsRejected = false,
                 ProgrammingLanguage = request.ProgrammingLanguage,
                 FullName = request.FullName,
                 LanguageLevel = request.LanguageLevel,

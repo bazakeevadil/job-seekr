@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;

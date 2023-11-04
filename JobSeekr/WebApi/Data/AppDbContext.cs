@@ -11,6 +11,19 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-       
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword("admin");
+        modelBuilder.Entity<User>()
+            .HasData(
+                new User
+                {
+                    Id = 228,
+                    Email = "admin@gmail.com",
+                    HashPassword = passwordHash,
+                    IsBlocked = false,
+                    Role = Role.Admin,
+                });
+
+        modelBuilder.Entity<User>()
+            .Navigation(u => u.Resumes).AutoInclude();
     }
 }

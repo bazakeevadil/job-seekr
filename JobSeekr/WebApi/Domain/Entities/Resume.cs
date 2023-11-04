@@ -4,6 +4,7 @@ public class Resume
 {
     public long Id { get; set; }
     public long UserId { get; set; }
+    public bool IsRejected { get; set; }
     public required string FullName {  get; set; }
     public required string ProgrammingLanguage {  get; set; }
     public required string LanguageLevel {  get; set; }

@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using System.ComponentModel.DataAnnotations;
 using WebApi.Contract.Request;
 using WebApi.Contract.Response;
 
@@ -27,10 +26,6 @@ public static class RegisterUser
 
         public async Task<Result<UserResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
-            //if (ValidationException validationException)
-            //{
-            //    _logger.LogError()
-            //}
             var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user is not null)
