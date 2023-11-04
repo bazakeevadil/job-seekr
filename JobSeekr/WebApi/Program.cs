@@ -1,6 +1,7 @@
 using Serilog;
 using WebApi;
 using WebApi.Shared.Behaviors;
+using WebApi.Shared.Middlewere;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddSwagger();
 builder.Services.AddAnyCors();
 builder.Services.AddCarter();
+
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
 builder.Services.AddScoped(
     typeof(IPipelineBehavior<,>),
@@ -38,6 +41,8 @@ app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapCarter();
 
