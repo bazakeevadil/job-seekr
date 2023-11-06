@@ -1,5 +1,33 @@
 ﻿namespace WebApi.Features.Resumes;
 
+public class RejectResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPatch("api/resume/reject",
+            async (IMediator mediator, long id) =>
+            {
+                var request = new RejectResume.Command
+                {
+                    Id = id,
+                };
+
+                var result = await mediator.Send(request);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Отклонить")
+            .WithDescription("Позволяет отклонить резюме")
+            .RequireAuthorization("Admin")
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
+
 public static class RejectResume
 {
     public record Command : IRequest<Result>
@@ -31,32 +59,5 @@ public static class RejectResume
 
             return Result.Ok();
         }
-    }
-}
-
-public class RejectResumeEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPatch("api/resume/reject",
-            async (IMediator mediator, long id) =>
-            {
-                var request = new RejectResume.Command
-                {
-                    Id = id,
-                };
-
-                var result = await mediator.Send(request);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.NoContent();
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Отклонить")
-            .WithDescription("Позволяет отклонить резюме")
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

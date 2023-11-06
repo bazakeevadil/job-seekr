@@ -1,8 +1,39 @@
-﻿using Mapster;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
+
+public class GetAllResumesOfOneUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapGet("api/resume/own",
+            async (IMediator mediator, HttpContext httpContext) =>
+            {
+                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _ = long.TryParse(userIdString, out var userId);
+
+                var query = new GetAllResumesOfOneUser.Query
+                {
+                    UserId = userId,
+                };
+
+                var result = await mediator.Send(query);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Получение резюме")
+            .WithDescription("Получает все резюме текушего пользователя")
+            .Produces<List<ResumeResponse>>(200)
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
 
 public static class GetAllResumesOfOneUser
 {
@@ -28,37 +59,5 @@ public static class GetAllResumesOfOneUser
 
             return response;
         }
-    }
-}
-
-public class GetAllResumesOfOneUserEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapGet("api/resume/own",
-            async (IMediator mediator, HttpContext httpContext) =>
-            {
-                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                _ = long.TryParse(userIdString, out var userId);
-
-                var query = new GetAllResumesOfOneUser.Query
-                {
-                    UserId = userId,
-                };
-           
-                var result = await mediator.Send(query);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.Ok(result.Value);
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Получение резюме")
-            .WithDescription("Получает все резюме текушего пользователя")
-            .Produces<List<ResumeResponse>>(200)
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

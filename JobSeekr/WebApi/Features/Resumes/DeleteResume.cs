@@ -3,6 +3,38 @@ using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
 
+public class DeleteResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("api/resume/{id}",
+            async (IMediator mediator, HttpContext httpContext, long id) =>
+            {
+                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _ = long.TryParse(userIdString, out var userId);
+
+                var command = new DeleteResume.Command
+                {
+                    Id = id,
+                    UserId = userId,
+                };
+
+                var result = await mediator.Send(command);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Удалить резюме")
+            .WithDescription("Удалить резюме текущего пользователя по ID")
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
+
 public static class DeleteResume
 {
     public record Command : IRequest<Result<ResumeResponse>>
@@ -35,37 +67,5 @@ public static class DeleteResume
 
             return Result.Ok<ResumeResponse>();
         }
-    }
-}
-
-public class DeleteResumeEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapDelete("api/resume/{id}",
-            async (IMediator mediator, HttpContext httpContext, long id) =>
-            {
-                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                _ = long.TryParse(userIdString, out var userId);
-
-                var command = new DeleteResume.Command
-                {
-                    Id = id,
-                    UserId = userId,
-                };
-
-                var result = await mediator.Send(command);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.NoContent();
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Удалить резюме")
-            .WithDescription("Удалить резюме текущего пользователя по ID")
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

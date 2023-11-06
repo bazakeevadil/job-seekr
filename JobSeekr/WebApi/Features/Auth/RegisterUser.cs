@@ -1,8 +1,33 @@
-﻿using Mapster;
-using WebApi.Contract.Request;
+﻿using WebApi.Contract.Request;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Auth;
+
+public class RegisterUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/auth/register",
+            async (IMediator mediator, RegisterUserRequest request) =>
+            {
+                var command = request.Adapt<RegisterUser.Command>();
+
+                var result = await mediator.Send(command);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .AllowAnonymous()
+            .WithTags("Auth Endpoints")
+            .WithSummary("Регистрация")
+            .WithDescription("Чтобы получит доступ к endpointom нужно зарегистрироваться")
+            .Produces<UserResponse>(200)
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
 
 public static class RegisterUser
 {
@@ -46,31 +71,5 @@ public static class RegisterUser
 
             return response;
         }
-    }
-}
-
-public class RegisterUserEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPost("api/auth/register",
-            async (IMediator mediator, RegisterUserRequest request) =>
-            {
-                var command = request.Adapt<RegisterUser.Command>();
-
-                var result = await mediator.Send(command);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.Ok(result.Value);
-            })
-            .AllowAnonymous()
-            .WithTags("Auth Endpoints")
-            .WithSummary("Регистрация")
-            .WithDescription("Чтобы получит доступ к endpointom нужно зарегистрироваться")
-            .Produces<UserResponse>(200)
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

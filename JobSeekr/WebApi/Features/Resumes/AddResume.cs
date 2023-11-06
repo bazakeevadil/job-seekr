@@ -1,10 +1,39 @@
-﻿using Mapster;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using WebApi.Contract.Request;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
+
+public class AddResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/resume",
+            async (IMediator mediator, AddResumeRequest request, HttpContext httpContext) =>
+            {
+                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _ = long.TryParse(userIdString, out var userId);
+
+                var command = request.Adapt<AddResume.Command>();
+
+                command = command with { UserId = userId };
+
+                var result = await mediator.Send(command);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Создание резюме")
+            .WithDescription("Создать резюме текушего пользователя")
+            .Produces<ResumeResponse>(200)
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
 
 public static class AddResume
 {
@@ -62,36 +91,5 @@ public static class AddResume
 
             return response;
         }
-    }
-}
-
-public class AddResumeEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPost("api/resume",
-            async (IMediator mediator, AddResumeRequest request, HttpContext httpContext) =>
-            {
-                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                _ = long.TryParse(userIdString, out var userId);
-
-                var command = request.Adapt<AddResume.Command>();
-
-                command = command with { UserId = userId };
-
-                var result = await mediator.Send(command);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.Ok(result.Value);
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Создание резюме")
-            .WithDescription("Создать резюме текушего пользователя")
-            .Produces<ResumeResponse>(200)
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

@@ -6,3 +6,4 @@ global using WebApi.Domain.Enums;
 global using MediatR;
 global using Carter;
 global using Microsoft.EntityFrameworkCore;
+global using Mapster;

@@ -1,5 +1,4 @@
-﻿using Mapster;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -7,6 +6,32 @@ using WebApi.Contract.Request;
 using WebApi.Shared.Helpers;
 
 namespace WebApi.Features.Auth;
+
+public class LoginUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/auth/login",
+            async (IMediator mediator, LoginUserRequest request) =>
+            {
+                var query = request.Adapt<LoginUser.Query>();
+
+                var result = await mediator.Send(query);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .AllowAnonymous()
+            .WithTags("Auth Endpoints")
+            .WithSummary("Аутентификация")
+            .WithDescription("Чтобы получит доступ к endpoints нужно аутентификация чтобы понять что можно пользователю ")
+            .Produces<string>(200)
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
 
 public static class LoginUser
 {
@@ -63,31 +88,5 @@ public static class LoginUser
 
             return handler.WriteToken(token);
         }
-    }
-}
-
-public class LoginUserEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPost("api/auth/login",
-            async (IMediator mediator, LoginUserRequest request) =>
-            {
-                var query = request.Adapt<LoginUser.Query>();
-
-                var result = await mediator.Send(query);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.Ok(result.Value);
-            })
-            .AllowAnonymous()
-            .WithTags("Auth Endpoints")
-            .WithSummary("Аутентификация")
-            .WithDescription("Чтобы получит доступ к endpoints нужно аутентификация чтобы понять что можно пользователю ")
-            .Produces<string>(200)
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

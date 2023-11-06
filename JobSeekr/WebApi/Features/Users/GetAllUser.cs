@@ -1,7 +1,32 @@
-﻿using Mapster;
-using WebApi.Contract.Response;
+﻿using WebApi.Contract.Response;
 
 namespace WebApi.Features.Users;
+
+public class GetAllUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapGet("api/user",
+            async (IMediator mediator) =>
+            {
+                var query = new GetAllUser.Query();
+
+                var result = await mediator.Send(query);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .WithTags("User Endpoints")
+            .WithSummary("Получение пользователей")
+            .WithDescription("Получает всех пользователей")
+            .RequireAuthorization("Admin")
+            .Produces<List<UserResponse>>(200)
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
 
 public class GetAllUser
 {
@@ -24,30 +49,5 @@ public class GetAllUser
 
             return response;
         }
-    }
-}
-
-public class GetAllUserEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapGet("api/user",
-            async (IMediator mediator) =>
-            {
-                var query = new GetAllUser.Query();
-
-                var result = await mediator.Send(query);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.Ok(result.Value);
-            })
-            .WithTags("User Endpoints")
-            .WithSummary("Получение пользователей")
-            .WithDescription("Получает всех пользователей")
-            .Produces<List<UserResponse>>(200)
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

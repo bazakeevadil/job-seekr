@@ -65,6 +65,7 @@ public static class DependencyInjection
             opts.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();
+            opts.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
         });
 
         return services;

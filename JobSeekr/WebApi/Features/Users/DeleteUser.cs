@@ -2,6 +2,34 @@
 
 namespace WebApi.Features.Users;
 
+public class DeleteUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("api/user/{email}",
+            async (IMediator mediator, HttpContext httpContext, string email) =>
+            {
+                var command = new DeleteUser.Command
+                {
+                    Email = email
+                };
+
+                var result = await mediator.Send(command);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
+            })
+            .WithTags("User Endpoints")
+            .WithSummary("Удалить пользователя")
+            .WithDescription("Удалить пользователя по Email")
+            .RequireAuthorization("Admin")
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
+
 public static class DeleteUser
 {
     public record Command : IRequest<Result>
@@ -31,32 +59,5 @@ public static class DeleteUser
 
             return Result.Ok();
         }
-    }
-}
-
-public class DeleteUserEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapDelete("api/user/{email}",
-            async (IMediator mediator, HttpContext httpContext, string email) =>
-            {
-                var command = new DeleteUser.Command
-                {
-                    Email = email
-                };
-
-                var result = await mediator.Send(command);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.NoContent();
-            })
-            .WithTags("User Endpoints")
-            .WithSummary("Удалить пользователя")
-            .WithDescription("Удалить пользователя по Email")
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

@@ -1,5 +1,33 @@
 ﻿namespace WebApi.Features.Users;
 
+public class BlockUserEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPatch("api/user/blocked",
+            async (IMediator mediator, string email) =>
+            {
+                var request = new BlockUser.Command
+                {
+                    Email = email,
+                };
+
+                var result = await mediator.Send(request);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
+            })
+            .WithTags("User Endpoints")
+            .WithSummary("Блокировать")
+            .WithDescription("Позволяет заблокировать пользователя")
+            .RequireAuthorization("Admin")
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
+
 public static class BlockUser
 {
     public record Command : IRequest<Result>
@@ -31,32 +59,5 @@ public static class BlockUser
 
             return Result.Ok();
         }
-    }
-}
-
-public class BlockUserEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPatch("api/user/blocked",
-            async (IMediator mediator, string email) =>
-            {
-                var request = new BlockUser.Command
-                {
-                    Email = email,
-                };
-
-                var result = await mediator.Send(request);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.NoContent();
-            })
-            .WithTags("User Endpoints")
-            .WithSummary("Блокировать")
-            .WithDescription("Позволяет заблокировать пользователя")
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

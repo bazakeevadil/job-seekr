@@ -1,7 +1,32 @@
-﻿using Mapster;
-using WebApi.Contract.Response;
+﻿using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
+
+public class GetAllResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapGet("api/resume",
+            async (IMediator mediator) =>
+            {
+                var query = new GetAllResume.Query();
+
+                var result = await mediator.Send(query);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Получение резюме")
+            .WithDescription("Получает резюме всех пользователей")
+            .RequireAuthorization("Admin")
+            .Produces<List<ResumeResponse>>(200)
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
 
 public static class GetAllResume
 {
@@ -24,30 +49,5 @@ public static class GetAllResume
 
             return response;
         }
-    }
-}
-
-public class GetAllResumeEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapGet("api/resume",
-            async (IMediator mediator) =>
-            {
-                var query = new GetAllResume.Query();
-
-                var result = await mediator.Send(query);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.Ok(result.Value);
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Получение резюме")
-            .WithDescription("Получает резюме всех пользователей")
-            .Produces<List<ResumeResponse>>(200)
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

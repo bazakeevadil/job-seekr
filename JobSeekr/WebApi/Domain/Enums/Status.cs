@@ -3,6 +3,6 @@
 public enum Status
 {
     Pending = 1,
-    Private,
-    Public,
+    Private = 2,
+    Public = 3,
 }

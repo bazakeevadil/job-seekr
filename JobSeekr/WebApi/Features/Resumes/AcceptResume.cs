@@ -1,5 +1,33 @@
 ﻿namespace WebApi.Features.Resumes;
 
+public class AcceptResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPatch("api/resume/accept",
+            async (IMediator mediator, long id) =>
+            {
+                var request = new AcceptResume.Command
+                {
+                    Id = id,
+                };
+
+                var result = await mediator.Send(request);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Принять")
+            .WithDescription("Принять резюме пользователя")
+            .RequireAuthorization("Admin")
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
+
 public static class AcceptResume
 {
     public record Command : IRequest<Result>
@@ -31,32 +59,5 @@ public static class AcceptResume
 
             return Result.Ok();
         }
-    }
-}
-
-public class AcceptResumeEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPatch("api/resume/accept",
-            async (IMediator mediator, long id) =>
-            {
-                var request = new AcceptResume.Command
-                {
-                    Id = id,
-                };
-
-                var result = await mediator.Send(request);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.NoContent();
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Принять")
-            .WithDescription("Принять резюме пользователя")
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }

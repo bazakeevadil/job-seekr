@@ -3,6 +3,38 @@ using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
 
+public class UpdateResumeEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPatch("api/resume",
+            async (IMediator mediator, HttpContext httpContext, UpdateResume.Props data) =>
+            {
+                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _ = long.TryParse(userIdString, out var userId);
+
+                var request = new UpdateResume.Command
+                {
+                    UserId = userId,
+                    Props = data,
+                };
+
+                var result = await mediator.Send(request);
+
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
+            })
+            .WithTags("Resume Endpoints")
+            .WithSummary("Изменить резюме")
+            .WithDescription("Изменить резюме текушего пользователя")
+            .Produces<Result>(400)
+            .WithOpenApi();
+    }
+}
+
 public static class UpdateResume
 {
     public record Command : IRequest<Result>
@@ -48,37 +80,5 @@ public static class UpdateResume
 
             return Result.Ok();
         }
-    }
-}
-
-public class UpdateResumeEndpoint : ICarterModule
-{
-    public void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapPatch("api/resume",
-            async (IMediator mediator, HttpContext httpContext, UpdateResume.Props data) =>
-            {
-                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                _ = long.TryParse(userIdString, out var userId);
-
-                var request = new UpdateResume.Command
-                {
-                    UserId = userId,
-                    Props = data,
-                };
-
-                var result = await mediator.Send(request);
-
-                if (result.IsFailure)
-                    return Results.BadRequest(result);
-
-                return Results.NoContent();
-            })
-            .WithTags("Resume Endpoints")
-            .WithSummary("Изменить резюме")
-            .WithDescription("Изменить резюме текушего пользователя")
-            .Produces<Result>(400)
-            .WithOpenApi();
     }
 }
