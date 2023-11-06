@@ -2,6 +2,7 @@ using Serilog;
 using WebApi;
 using WebApi.Shared.Behaviors;
 using WebApi.Shared.Middlewere;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,15 @@ builder.Services.AddCarter();
 
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 builder.Services.AddScoped(
     typeof(IPipelineBehavior<,>),
     typeof(LoggingPipelineBehavior<,>));
+
+builder.Services.AddScoped(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationPipelineBehavior<,>));
 
 var app = builder.Build();
 

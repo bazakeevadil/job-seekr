@@ -5,21 +5,21 @@ public class Result<TValue> : Result
     public TValue? Value { get; private set; }
     public bool HasValue { get; private set; }
 
-    internal Result()
+    public Result()
     {
         IsSuccess = true;
         Value = default;
         HasValue = false;
     }
 
-    internal Result(TValue value)
+    public Result(TValue value)
     {
         IsSuccess = true;
         Value = value;
         HasValue = false;
     }
 
-    internal Result(Error error)
+    public Result(Error error)
     {
         IsSuccess = false;
         Value = default;
@@ -27,7 +27,7 @@ public class Result<TValue> : Result
         Errors.Add(error);
     }
 
-    internal Result(List<Error> errors)
+    public Result(List<Error> errors)
     {
         IsSuccess = false;
         Value = default;

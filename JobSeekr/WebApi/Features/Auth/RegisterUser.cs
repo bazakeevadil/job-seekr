@@ -1,4 +1,5 @@
-﻿using WebApi.Contract.Request;
+﻿using FluentValidation;
+using WebApi.Contract.Request;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Auth;
@@ -36,6 +37,25 @@ public static class RegisterUser
         public required string Email { get; init; }
 
         public required string Password { get; init; }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c).NotNull();
+
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .Length(1, 200)
+                .EmailAddress().WithMessage("Почта не соответствует формату.");
+
+            RuleFor(c => c.Password)
+                .NotEmpty()
+                .MinimumLength(4).WithMessage("Пароль должен содержать не меньше 4 символов.")
+                .Matches(@"[0-9]+").WithMessage("Пароль должен содержать цифры.")
+                .Matches(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]").WithMessage("Пароль должен содержать специальные символы.");
+        }
     }
 
     internal class Handler : IRequestHandler<Command, Result<UserResponse>>

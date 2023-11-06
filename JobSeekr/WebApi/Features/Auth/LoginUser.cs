@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using FluentValidation;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -40,6 +41,10 @@ public static class LoginUser
         public required string Email { get; init; }
 
         public required string Password { get; init; }
+    }
+
+    public class Validator : AbstractValidator<Query>
+    {
     }
 
     internal class Handler : IRequestHandler<Query, Result<string>>
