@@ -35,9 +35,9 @@ public class GetAllResumesOfOneUserEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("api/resume",
-        async (IMediator mediator, HttpContext httpContext) =>
-        {
+        app.MapGet("api/resume/own",
+            async (IMediator mediator, HttpContext httpContext) =>
+            {
                 var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 _ = long.TryParse(userIdString, out var userId);
@@ -47,10 +47,14 @@ public class GetAllResumesOfOneUserEndpoint : ICarterModule
                     UserId = userId,
                 };
            
-                var response = await mediator.Send(query);
+                var result = await mediator.Send(query);
 
-                return Results.Ok(response);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
             })
+            .WithTags("Resume Endpoints")
             .WithSummary("Получение резюме")
             .WithDescription("Получает все резюме текушего пользователя")
             .Produces<List<ResumeResponse>>(200)

@@ -70,11 +70,14 @@ public class UpdateResumeEndpoint : ICarterModule
 
                 var result = await mediator.Send(request);
 
-                return Results.Ok(result);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
             })
+            .WithTags("Resume Endpoints")
             .WithSummary("Изменить резюме")
             .WithDescription("Изменить резюме текушего пользователя")
-            .Produces<ResumeResponse>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

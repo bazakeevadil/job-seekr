@@ -48,11 +48,14 @@ public class AcceptResumeEndpoint : ICarterModule
 
                 var result = await mediator.Send(request);
 
-                return Results.Ok(result);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
             })
+            .WithTags("Resume Endpoints")
             .WithSummary("Принять")
             .WithDescription("Принять резюме пользователя")
-            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

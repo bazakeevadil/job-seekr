@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Features.Resumes;
 
-public static class RejectedResume
+public static class RejectResume
 {
     public record Command : IRequest<Result>
     {
@@ -34,25 +34,28 @@ public static class RejectedResume
     }
 }
 
-public class RejectedResumeEndpoint : ICarterModule
+public class RejectResumeEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPatch("api/resume/rejected",
+        app.MapPatch("api/resume/reject",
             async (IMediator mediator, long id) =>
             {
-                var request = new RejectedResume.Command
+                var request = new RejectResume.Command
                 {
                     Id = id,
                 };
 
                 var result = await mediator.Send(request);
 
-                return Results.Ok(result);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
             })
+            .WithTags("Resume Endpoints")
             .WithSummary("Отклонить")
             .WithDescription("Позволяет отклонить резюме")
-            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

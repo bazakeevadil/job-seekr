@@ -1,4 +1,6 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using WebApi.Contract.Request;
 using WebApi.Contract.Response;
 
@@ -8,6 +10,7 @@ public static class AddResume
 {
     public record Command : IRequest<Result<ResumeResponse>>
     {
+        public long UserId { get; init; }
         public required string FullName { get; init; }
         public required string ProgrammingLanguage { get; init; }
         public required string LanguageLevel { get; init; }
@@ -31,6 +34,11 @@ public static class AddResume
 
         public async Task<Result<ResumeResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
+            var user = await _appDbContext.Users.FindAsync(request.UserId);
+
+            if (user is null)
+                return Result.Fail<ResumeResponse>("Пользователь не найден.");
+
             var resume = new Resume
             {
                 Status = Status.Pending,
@@ -46,7 +54,8 @@ public static class AddResume
                 WorkPeriods = request.WorkPeriods.Adapt<List<WorkPeriod>>(),
             };
 
-            _appDbContext.Resumes.Add(resume);
+            user.Resumes.Add(resume);
+
             await _appDbContext.SaveChangesAsync();
 
             var response = resume.Adapt<ResumeResponse>();
@@ -61,9 +70,15 @@ public class AddResumeEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("api/resume",
-            async (IMediator mediator, AddResumeRequest request) =>
+            async (IMediator mediator, AddResumeRequest request, HttpContext httpContext) =>
             {
+                var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _ = long.TryParse(userIdString, out var userId);
+
                 var command = request.Adapt<AddResume.Command>();
+
+                command = command with { UserId = userId };
 
                 var result = await mediator.Send(command);
 
@@ -72,6 +87,7 @@ public class AddResumeEndpoint : ICarterModule
 
                 return Results.Ok(result.Value);
             })
+            .WithTags("Resume Endpoints")
             .WithSummary("Создание резюме")
             .WithDescription("Создать резюме текушего пользователя")
             .Produces<ResumeResponse>(200)

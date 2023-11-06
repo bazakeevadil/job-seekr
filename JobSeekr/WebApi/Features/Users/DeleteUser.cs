@@ -51,11 +51,11 @@ public class DeleteUserEndpoint : ICarterModule
                 if (result.IsFailure)
                     return Results.BadRequest(result);
 
-                return Results.Ok();
+                return Results.NoContent();
             })
+            .WithTags("User Endpoints")
             .WithSummary("Удалить пользователя")
             .WithDescription("Удалить пользователя по Email")
-            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

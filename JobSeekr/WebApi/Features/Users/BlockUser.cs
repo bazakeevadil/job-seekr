@@ -48,11 +48,14 @@ public class BlockUserEndpoint : ICarterModule
 
                 var result = await mediator.Send(request);
 
-                return Results.Ok(result);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
             })
+            .WithTags("User Endpoints")
             .WithSummary("Блокировать")
             .WithDescription("Позволяет заблокировать пользователя")
-            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

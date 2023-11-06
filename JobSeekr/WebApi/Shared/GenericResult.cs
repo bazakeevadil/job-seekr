@@ -21,7 +21,7 @@ public class Result<TValue> : Result
 
     internal Result(Error error)
     {
-        IsSuccess = true;
+        IsSuccess = false;
         Value = default;
         HasValue = false;
         Errors.Add(error);
@@ -29,7 +29,7 @@ public class Result<TValue> : Result
 
     internal Result(List<Error> errors)
     {
-        IsSuccess = true;
+        IsSuccess = false;
         Value = default;
         HasValue = false;
         Errors = errors;

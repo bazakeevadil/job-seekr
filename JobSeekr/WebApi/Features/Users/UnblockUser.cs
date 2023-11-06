@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Features.Users;
 
-public static class UnlockUser
+public static class UnblockUser
 {
     public record Command : IRequest<Result>
     {
@@ -34,25 +34,28 @@ public static class UnlockUser
     }
 }
 
-public class UnlockUserEndpoint : ICarterModule
+public class UnblockUserEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPatch("api/user/unlock",
+        app.MapPatch("api/user/unblock",
             async (IMediator mediator, string email) =>
             {
-                var request = new BlockUser.Command
+                var request = new UnblockUser.Command
                 {
                     Email = email,
                 };
 
                 var result = await mediator.Send(request);
 
-                return Results.Ok(result);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.NoContent();
             })
+            .WithTags("User Endpoints")
             .WithSummary("Разблокировать")
             .WithDescription("Админ может разблокировать заблокированного пользователя")
-            .Produces<Result>(200)
             .Produces<Result>(400)
             .WithOpenApi();
     }

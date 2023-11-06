@@ -36,10 +36,14 @@ public class GetAllUserEndpoint : ICarterModule
             {
                 var query = new GetAllUser.Query();
 
-                var response = await mediator.Send(query);
+                var result = await mediator.Send(query);
 
-                return Results.Ok(response);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
             })
+            .WithTags("User Endpoints")
             .WithSummary("Получение пользователей")
             .WithDescription("Получает всех пользователей")
             .Produces<List<UserResponse>>(200)

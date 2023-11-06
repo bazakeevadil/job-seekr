@@ -36,12 +36,16 @@ public class GetAllResumeEndpoint : ICarterModule
             {
                 var query = new GetAllResume.Query();
 
-                var response = await mediator.Send(query);
+                var result = await mediator.Send(query);
 
-                return Results.Ok(response);
+                if (result.IsFailure)
+                    return Results.BadRequest(result);
+
+                return Results.Ok(result.Value);
             })
+            .WithTags("Resume Endpoints")
             .WithSummary("Получение резюме")
-            .WithDescription("Получает все резюме текушего пользователя")
+            .WithDescription("Получает резюме всех пользователей")
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)
             .WithOpenApi();
