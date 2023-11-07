@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApi.Contract.Request;
+﻿namespace WebApi.Contract.Request;
 
 public record RegisterUserRequest
 {

@@ -34,7 +34,7 @@ public static class BlockUser
 {
     public record Command : IRequest<Result>
     {
-        public required string Email { get; set; }
+        public required string Email { get; init; }
     }
 
     public class Validator : AbstractValidator<Command>

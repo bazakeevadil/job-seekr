@@ -34,7 +34,7 @@ public static class AcceptResume
 {
     public record Command : IRequest<Result>
     {
-        public long Id { get; set; }
+        public long Id { get; init; }
     }
 
     public class Validator : AbstractValidator<Command> { }
