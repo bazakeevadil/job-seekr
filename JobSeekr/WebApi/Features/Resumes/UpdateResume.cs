@@ -48,37 +48,79 @@ public static class UpdateResume
 
     public record Props
     {
-        public required string FullName { get; init; }
-        public required string ProgrammingLanguage { get; init; }
-        public required string LanguageLevel { get; init; }
-        public required string Country { get; init; }
-        public required string City { get; init; }
+        public string? FullName { get; init; }
+        public string? ProgrammingLanguage { get; init; }
+        public string? LanguageLevel { get; init; }
+        public string? Country { get; init; }
+        public string? City { get; init; }
         public string? Links { get; init; }
-        public required string Skills { get; init; }
+        public string? Skills { get; init; }
 
-        public List<EducationPeriodResponse> EducationPeriods { get; init; } = new();
-        public List<WorkPeriodResponse> WorkPeriods { get; init; } = new();
+        public List<EducationPeriodProps> EducationPeriods { get; init; } = new();
+        public List<WorkPeriodProps> WorkPeriods { get; init; } = new();
 
+    }
+
+    public record EducationPeriodProps
+    {
+        public long Id { get; init; }
+        public long ResumeId { get; init; }
+        public string? Name { get; init; }
+        public string? Degree { get; init; }
+        public string? City { get; init; }
+        public string? Description { get; init; }
+        public DateTime? From { get; init; }
+        public DateTime? To { get; init; }
+    }
+
+    public record WorkPeriodProps
+    {
+        public long Id { get; init; }
+        public long ResumeId { get; init; }
+        public string? Position { get; init; }
+        public string? Employer { get; init; }
+        public string? City { get; init; }
+        public string? Description { get; init; }
+        public DateTime? From { get; init; }
+        public DateTime? To { get; init; }
     }
 
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
-            RuleFor(c => c.Props)
-                .NotNull()
-                .NotEmpty();
+            RuleFor(c => c.Props).NotNull();
+
             When(c => c.Props is not null, () =>
             {
-                RuleFor(c => c.Props.FullName).NotNull();
-                RuleFor(c => c.Props.ProgrammingLanguage).NotNull();
-                RuleFor(c => c.Props.LanguageLevel).NotNull();
-                RuleFor(c => c.Props.Country).NotNull();
-                RuleFor(c => c.Props.City).NotNull();
-                RuleFor(c => c.Props.Skills).NotNull();
-                RuleFor(c => c.Props.EducationPeriods).NotNull();
-                RuleFor(c => c.Props.WorkPeriods).NotNull();
+                RuleFor(c => c.Props.FullName).NotEmpty();
+                RuleFor(c => c.Props.ProgrammingLanguage).NotEmpty();
+                RuleFor(c => c.Props.LanguageLevel).NotEmpty();
+                RuleFor(c => c.Props.Country).NotEmpty();
+                RuleFor(c => c.Props.City).NotEmpty();
+                RuleFor(c => c.Props.Skills).NotEmpty();
 
+                RuleForEach(c => c.Props.EducationPeriods)
+                .ChildRules(period =>
+                {
+                    period.RuleFor(p => p.City).NotEmpty();
+                    period.RuleFor(p => p.Name).NotEmpty();
+                    period.RuleFor(p => p.Degree).NotEmpty();
+                    period.RuleFor(p => p.Description).NotEmpty();
+                    period.RuleFor(p => p.From).NotEmpty();
+                    period.RuleFor(p => p.To).NotEmpty();
+                });
+
+                RuleForEach(c => c.Props.WorkPeriods)
+                .ChildRules(period =>
+                {
+                    period.RuleFor(p => p.City).NotEmpty();
+                    period.RuleFor(p => p.Position).NotEmpty();
+                    period.RuleFor(p => p.Employer).NotEmpty();
+                    period.RuleFor(p => p.Description).NotEmpty();
+                    period.RuleFor(p => p.From).NotEmpty();
+                    period.RuleFor(p => p.To).NotEmpty();
+                });
             });
         }
     }
@@ -95,14 +137,83 @@ public static class UpdateResume
         public async Task<Result> Handle(
             Command request, CancellationToken cancellationToken)
         {
-            var user = await _context.Resumes.FirstOrDefaultAsync(r =>
+            var resume = await _context.Resumes.FirstOrDefaultAsync(r =>
                 r.Id == request.Id
                 && r.UserId == request.UserId);
 
-            if (user is null)
-                return Result.Fail("Пользователь не найден.");
+            if (resume is null)
+                return Result.Fail("Резюме не найдено.");
 
-            _context.Update(user);
+            if (!string.IsNullOrEmpty(request.Props.FullName))
+                resume.FullName = request.Props.FullName;
+
+            if (!string.IsNullOrEmpty(request.Props.ProgrammingLanguage))
+                resume.ProgrammingLanguage = request.Props.ProgrammingLanguage;
+
+            if (!string.IsNullOrEmpty(request.Props.LanguageLevel))
+                resume.LanguageLevel = request.Props.LanguageLevel;
+
+            if (!string.IsNullOrEmpty(request.Props.Country))
+                resume.Country = request.Props.Country;
+
+            if (!string.IsNullOrEmpty(request.Props.City))
+                resume.City = request.Props.City;
+
+            if (!string.IsNullOrEmpty(request.Props.Links))
+                resume.Links = request.Props.Links;
+
+            if (!string.IsNullOrEmpty(request.Props.Skills))
+                resume.Skills = request.Props.Skills;
+
+            foreach (var period in request.Props.EducationPeriods
+                .Where(p => resume.EducationPeriods
+                    .Any(x => x.Id == p.Id)))
+            {
+                var oldPeriod = resume.EducationPeriods.First(x => x.Id == period.Id);
+                if(!string.IsNullOrEmpty(period.Name))
+                    oldPeriod.Name = period.Name;
+
+                if (!string.IsNullOrEmpty(period.Degree))
+                    oldPeriod.Degree = period.Degree;
+
+                if (!string.IsNullOrEmpty(period.Description))
+                    oldPeriod.Description = period.Description;
+
+                if (!string.IsNullOrEmpty(period.City))
+                    oldPeriod.City = period.City;
+
+                if (period.From is null)
+                    oldPeriod.From = period.From;
+
+                if (period.To is null)
+                    oldPeriod.To = period.To;
+            }
+
+            foreach (var period in request.Props.WorkPeriods
+                .Where(p => resume.WorkPeriods
+                    .Any(x => x.Id == p.Id)))
+            {
+                var oldPeriod = resume.WorkPeriods.First(x => x.Id == period.Id);
+                if (!string.IsNullOrEmpty(period.Employer))
+                    oldPeriod.Employer = period.Employer;
+
+                if (!string.IsNullOrEmpty(period.Description))
+                    oldPeriod.Description = period.Description;
+
+                if (!string.IsNullOrEmpty(period.Position))
+                    oldPeriod.Position = period.Position;
+
+                if (period.From is null)
+                    oldPeriod.From = period.From;
+
+                if (period.To is null)
+                    oldPeriod.To = period.To;
+
+                if (!string.IsNullOrEmpty(period.City))
+                    oldPeriod.City = period.City;
+            }
+
+            _context.Update(resume);
             await _context.SaveChangesAsync();
 
             return Result.Ok();

@@ -8,6 +8,6 @@ public record WorkPeriodResponse
     public required string Employer { get; init; }
     public required string City { get; init; }
     public string? Description { get; init; }
-    public DateTime From { get; init; }
+    public DateTime? From { get; init; }
     public DateTime? To { get; init; }
 }

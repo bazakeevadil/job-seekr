@@ -46,7 +46,7 @@ public static class GetAllResume
 
         public async Task<Result<List<ResumeResponse>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var resumes = await _context.Resumes.AsNoTracking().ToListAsync();
+            var resumes = await _context.Resumes.Where(r => r.Status == Status.Public).AsNoTracking().ToListAsync();
 
             var response = resumes.Adapt<List<ResumeResponse>>();
 

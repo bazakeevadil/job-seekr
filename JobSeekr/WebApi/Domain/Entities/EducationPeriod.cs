@@ -18,6 +18,6 @@ public class EducationPeriod
 
     [StringLength(200)]
     public string? Description { get; set; }
-    public DateTime From { get; set; }
+    public DateTime? From { get; set; }
     public DateTime? To { get; set; }
 }
