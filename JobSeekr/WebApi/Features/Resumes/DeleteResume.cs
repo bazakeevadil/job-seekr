@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using FluentValidation;
+using System.Security.Claims;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
@@ -42,6 +43,8 @@ public static class DeleteResume
         public required long Id { get; init; }
         public required long UserId { get; init; }
     }
+
+    public class Validator : AbstractValidator<Command> { }
 
     internal class Handler
         : IRequestHandler<Command, Result<ResumeResponse>>

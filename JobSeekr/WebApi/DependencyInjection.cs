@@ -78,7 +78,7 @@ public static class DependencyInjection
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "ReviewerApi",
+                Title = "JobSeekrApi",
                 Version = "v1"
             });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()

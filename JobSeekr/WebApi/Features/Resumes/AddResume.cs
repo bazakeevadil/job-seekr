@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using FluentValidation;
+using System.Security.Claims;
 using WebApi.Contract.Request;
 using WebApi.Contract.Response;
 
@@ -52,6 +53,19 @@ public static class AddResume
         public List<WorkPeriodResponse> WorkPeriods { get; init; } = new();
     }
 
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c.FullName).NotNull().NotEmpty();
+            RuleFor(c => c.ProgrammingLanguage).NotNull().NotEmpty();
+            RuleFor(c => c.LanguageLevel).NotNull().NotEmpty();
+            RuleFor(c => c.Country).NotNull().NotEmpty();
+            RuleFor(c => c.City).NotNull().NotEmpty();
+            RuleFor(c => c.Skills).NotNull().NotEmpty();
+        }
+    }
+
     internal class Handler : IRequestHandler<Command, Result<ResumeResponse>>
     {
         private readonly AppDbContext _appDbContext;
@@ -71,7 +85,7 @@ public static class AddResume
             var resume = new Resume
             {
                 Status = Status.Pending,
-                IsRejected = false,
+                IsRejected = true,
                 ProgrammingLanguage = request.ProgrammingLanguage,
                 FullName = request.FullName,
                 LanguageLevel = request.LanguageLevel,

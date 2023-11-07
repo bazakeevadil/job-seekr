@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using FluentValidation;
+using System.Security.Claims;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
@@ -8,7 +9,7 @@ public class UpdateResumeEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPatch("api/resume",
-            async (IMediator mediator, HttpContext httpContext, UpdateResume.Props data) =>
+            async (IMediator mediator, HttpContext httpContext, UpdateResume.Props data, long id) =>
             {
                 var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -16,6 +17,7 @@ public class UpdateResumeEndpoint : ICarterModule
 
                 var request = new UpdateResume.Command
                 {
+                    Id = id,
                     UserId = userId,
                     Props = data,
                 };
@@ -39,6 +41,7 @@ public static class UpdateResume
 {
     public record Command : IRequest<Result>
     {
+        public long Id { get; init; }
         public required long UserId { get; init; }
         public required Props Props { get; init; }
     }
@@ -58,6 +61,28 @@ public static class UpdateResume
 
     }
 
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c.Props)
+                .NotNull()
+                .NotEmpty();
+            When(c => c.Props is not null, () =>
+            {
+                RuleFor(c => c.Props.FullName).NotNull();
+                RuleFor(c => c.Props.ProgrammingLanguage).NotNull();
+                RuleFor(c => c.Props.LanguageLevel).NotNull();
+                RuleFor(c => c.Props.Country).NotNull();
+                RuleFor(c => c.Props.City).NotNull();
+                RuleFor(c => c.Props.Skills).NotNull();
+                RuleFor(c => c.Props.EducationPeriods).NotNull();
+                RuleFor(c => c.Props.WorkPeriods).NotNull();
+
+            });
+        }
+    }
+
     internal class Handler : IRequestHandler<Command, Result>
     {
         private readonly AppDbContext _context;
@@ -70,7 +95,9 @@ public static class UpdateResume
         public async Task<Result> Handle(
             Command request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FindAsync(request.UserId);
+            var user = await _context.Resumes.FirstOrDefaultAsync(r =>
+                r.Id == request.Id
+                && r.UserId == request.UserId);
 
             if (user is null)
                 return Result.Fail("Пользователь не найден.");

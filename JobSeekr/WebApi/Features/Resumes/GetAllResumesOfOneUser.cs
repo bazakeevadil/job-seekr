@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using FluentValidation;
+using System.Security.Claims;
 using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
@@ -41,6 +42,8 @@ public static class GetAllResumesOfOneUser
     {
         public required long UserId { get; init; }
     }
+
+    public class Validator : AbstractValidator<Query> { }
 
     internal class Handler : IRequestHandler<Query, Result<List<ResumeResponse>>>
     {

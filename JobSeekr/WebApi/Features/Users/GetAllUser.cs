@@ -1,4 +1,5 @@
-﻿using WebApi.Contract.Response;
+﻿using FluentValidation;
+using WebApi.Contract.Response;
 
 namespace WebApi.Features.Users;
 
@@ -31,6 +32,8 @@ public class GetAllUserEndpoint : ICarterModule
 public class GetAllUser
 {
     public record Query : IRequest<Result<List<UserResponse>>> { }
+
+    public class Validator : AbstractValidator<Query> { }
 
     internal class Handler : IRequestHandler<Query, Result<List<UserResponse>>>
     {

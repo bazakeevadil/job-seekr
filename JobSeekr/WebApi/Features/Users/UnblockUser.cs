@@ -1,4 +1,6 @@
-﻿namespace WebApi.Features.Users;
+﻿using FluentValidation;
+
+namespace WebApi.Features.Users;
 
 public class UnblockUserEndpoint : ICarterModule
 {
@@ -33,6 +35,18 @@ public static class UnblockUser
     public record Command : IRequest<Result>
     {
         public required string Email { get; set; }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c).NotNull();
+
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .EmailAddress().WithMessage("Почта не соответствует формату.");
+        }
     }
 
     internal class Handler : IRequestHandler<Command, Result>

@@ -1,4 +1,6 @@
-﻿namespace WebApi.Features.Resumes;
+﻿using FluentValidation;
+
+namespace WebApi.Features.Resumes;
 
 public class RejectResumeEndpoint : ICarterModule
 {
@@ -34,6 +36,8 @@ public static class RejectResume
     {
         public long Id { get; set; }
     }
+
+    public class Validator : AbstractValidator<Command> { }
 
     internal class Handler : IRequestHandler<Command, Result>
     {

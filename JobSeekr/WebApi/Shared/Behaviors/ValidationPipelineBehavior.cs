@@ -25,6 +25,11 @@ public class ValidationPipelineBehavior<TRequest, TResponse>
         {
             var errors = valResult.Errors.Select(f => new Error(f.ErrorMessage, f.ErrorCode)).ToList();
 
+            if (typeof(TResponse) == typeof(Result))
+            {
+                return (Result.Fail(errors) as TResponse)!;
+            }
+
             var response = Activator.CreateInstance(typeof(TResponse), errors);
 
             if (response is not TResponse result)

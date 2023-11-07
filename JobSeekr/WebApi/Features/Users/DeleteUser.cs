@@ -1,4 +1,5 @@
-﻿using WebApi.Contract.Response;
+﻿using FluentValidation;
+using WebApi.Contract.Response;
 
 namespace WebApi.Features.Users;
 
@@ -35,6 +36,18 @@ public static class DeleteUser
     public record Command : IRequest<Result>
     {
         public required string Email { get; init; }
+    }
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c).NotNull();
+
+            RuleFor(c => c.Email)
+                .NotEmpty()
+                .EmailAddress().WithMessage("Почта не соответствует формату.");
+        }
     }
 
     internal class Handler

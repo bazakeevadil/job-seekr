@@ -45,6 +45,18 @@ public static class LoginUser
 
     public class Validator : AbstractValidator<Query>
     {
+        public Validator()
+        {
+            RuleFor(c => c).NotNull();
+
+            RuleFor(x => x.Email)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .EmailAddress();
+
+            RuleFor(c => c.Password)
+                .NotEmpty();
+        }
     }
 
     internal class Handler : IRequestHandler<Query, Result<string>>

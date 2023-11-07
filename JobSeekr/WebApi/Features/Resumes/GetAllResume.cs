@@ -1,4 +1,5 @@
-﻿using WebApi.Contract.Response;
+﻿using FluentValidation;
+using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
 
@@ -31,6 +32,8 @@ public class GetAllResumeEndpoint : ICarterModule
 public static class GetAllResume
 {
     public record Query : IRequest<Result<List<ResumeResponse>>> { }
+
+    public class Validator : AbstractValidator<Query> { }
 
     internal class Handler : IRequestHandler<Query, Result<List<ResumeResponse>>>
     {
