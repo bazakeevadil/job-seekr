@@ -1,8 +1,4 @@
-﻿using FluentValidation;
-using WebApi.Contract.Request;
-using WebApi.Contract.Response;
-
-namespace WebApi.Features.Auth;
+﻿namespace WebApi.Features.Auth;
 
 /// <summary>
 /// Endpoint для регистрации пользователя.

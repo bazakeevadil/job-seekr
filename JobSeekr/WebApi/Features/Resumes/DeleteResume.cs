@@ -1,8 +1,4 @@
-﻿using FluentValidation;
-using System.Security.Claims;
-using WebApi.Contract.Response;
-
-namespace WebApi.Features.Resumes;
+﻿namespace WebApi.Features.Resumes;
 
 /// <summary>
 /// Класс, представляющий модуль удаления резюме.

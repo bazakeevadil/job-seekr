@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using WebApi.Contract.Response;
-
-namespace WebApi.Features.Users;
+﻿namespace WebApi.Features.Users;
 
 /// <summary>
 /// Класс, отвечающий за обработку запросов на получение всех пользователей.

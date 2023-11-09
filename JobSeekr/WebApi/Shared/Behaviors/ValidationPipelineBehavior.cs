@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace WebApi.Shared.Behaviors;
+﻿namespace WebApi.Shared.Behaviors;
 
 /// <summary>
 /// Поведение конвейера валидации запросов.

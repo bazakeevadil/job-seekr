@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace WebApi.Features.Resumes;
+﻿namespace WebApi.Features.Resumes;
 
 /// <summary>
 /// Класс, представляющий точку входа для отклонения резюме.

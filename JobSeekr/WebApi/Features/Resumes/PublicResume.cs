@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using System.Security.Claims;
-
-namespace WebApi.Features.Resumes;
+﻿namespace WebApi.Features.Resumes;
 
 /// <summary>
 /// Класс, представляющий точку входа для установки публичного статуса резюме пользователя.

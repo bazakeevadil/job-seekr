@@ -1,9 +1,6 @@
-﻿using FluentValidation;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
-using WebApi.Contract.Request;
 using WebApi.Shared.Helpers;
 
 namespace WebApi.Features.Auth;

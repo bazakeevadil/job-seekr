@@ -1,6 +1,4 @@
-﻿using WebApi.Contract.Response;
-
-namespace WebApi.Contract.Request;
+﻿namespace WebApi.Contract.Request;
 
 /// <summary>
 /// Запрос на добавление резюме.

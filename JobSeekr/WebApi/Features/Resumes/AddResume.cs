@@ -1,9 +1,4 @@
-﻿using FluentValidation;
-using System.Security.Claims;
-using WebApi.Contract.Request;
-using WebApi.Contract.Response;
-
-namespace WebApi.Features.Resumes;
+﻿namespace WebApi.Features.Resumes;
 
 /// <summary>
 /// Класс, представляющий точку входа для добавления резюме.

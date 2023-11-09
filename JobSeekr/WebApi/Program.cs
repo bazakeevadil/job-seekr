@@ -2,7 +2,6 @@ using Serilog;
 using WebApi;
 using WebApi.Shared.Behaviors;
 using WebApi.Shared.Middlewere;
-using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 

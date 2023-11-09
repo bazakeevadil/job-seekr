@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace WebApi.Features.Users;
+﻿namespace WebApi.Features.Users;
 
 /// <summary>
 /// Класс, отвечающий за обработку запросов на блокировку пользователя.
