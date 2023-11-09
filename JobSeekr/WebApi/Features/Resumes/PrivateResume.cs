@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace WebApi.Features.Resumes;

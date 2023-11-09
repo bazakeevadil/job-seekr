@@ -86,12 +86,10 @@ public static class RegisterUser
     internal class Handler : IRequestHandler<Command, Result<UserResponse>>
     {
         private readonly AppDbContext _appDbContext;
-        private readonly ILogger<Handler> _logger;
 
-        public Handler(AppDbContext appDbContext, ILogger<Handler> logger)
+        public Handler(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
-            _logger = logger;
         }
 
         /// <summary>
@@ -102,7 +100,6 @@ public static class RegisterUser
         /// <returns>Результат операции регистрации пользователя.</returns>
         public async Task<Result<UserResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation(request.Email, request.Password);
             var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user is not null)

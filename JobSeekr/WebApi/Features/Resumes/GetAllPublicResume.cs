@@ -27,8 +27,8 @@ public class GetAllPublicResumeEndpoint : ICarterModule
                 return Results.Ok(result.Value);
             })
             .WithTags("Resume Endpoints")
-            .WithSummary("Получение резюме")
-            .WithDescription("Получает резюме всех пользователей")
+            .WithSummary("Получение публичных резюме")
+            .WithDescription("Получает публичные резюме всех пользователей")
             .RequireAuthorization("Admin")
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)

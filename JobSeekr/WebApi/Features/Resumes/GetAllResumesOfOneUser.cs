@@ -35,7 +35,7 @@ public class GetAllResumesOfOneUserEndpoint : ICarterModule
                 return Results.Ok(result.Value);
             })
             .WithTags("Resume Endpoints")
-            .WithSummary("Получение резюме")
+            .WithSummary("Получение текущего пользователя резюме")
             .WithDescription("Получает все резюме текушего пользователя")
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)
@@ -80,8 +80,8 @@ public static class GetAllResumesOfOneUser
         /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result<List<ResumeResponse>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var resumes = await _context.Resumes.FirstOrDefaultAsync(r => r.UserId == request.UserId);
-
+            var resumes = await _context.Resumes.Where(r => r.UserId == request.UserId).AsNoTracking().ToListAsync();
+     
             var response = resumes.Adapt<List<ResumeResponse>>();
 
             return response;
