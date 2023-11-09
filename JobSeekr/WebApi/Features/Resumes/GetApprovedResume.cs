@@ -26,7 +26,7 @@ public class GetApprovedResumeEndpoint : ICarterModule
             .WithTags("Resume Endpoints")
             .WithSummary("Получение потвержденные резюме")
             .WithDescription("Получает все потвежденные резюме")
-            .AllowAnonymous()
+            .RequireAuthorization("Admin")
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)
             .WithOpenApi();

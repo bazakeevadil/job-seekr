@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using WebApi.Domain.Entities;
 using WebApi.Shared.Helpers;
 
 namespace WebApi.Features.Auth;
@@ -104,6 +105,9 @@ public static class LoginUser
 
             if (user is null || !AuthHelper.CheckPassword(user, request.Password))
                 return Result.Fail<string>("Пользователь не найден или пароль указан неверно.");
+
+            if (user.IsBlocked)
+                return Result.Fail<string>("Пользователь заблокирован.");
 
             var claims = new List<Claim>
                 {

@@ -1,23 +1,50 @@
 ﻿namespace WebApi.Features.Photo;
 
-public class UploadFhotoEndpoint : ICarterModule
+public class UploadPhotoEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("api/upload", async (HttpRequest request) =>
+        app.MapPost("api/photo/upload", async (IFormFile file) =>
         {
-            using (var reader = new StreamReader(request.Body, System.Text.Encoding.UTF8))
-            {
-                string fileContent = await reader.ReadToEndAsync();
-
-                return "File Was Processed Sucessfully!";
-            }
-        })
-        .Accepts<IFormFile>("text/plain");
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            var bytes = stream.ToArray();
+        });
     }
 }
 
 public static class Upload
 {
+    public record Command : IRequest<Result>
+    {
+        public long ResumeId { get; init; }
+        public required byte[] Data { get; set; } = new byte[0];
+    }
 
+    public class Validator : AbstractValidator<Command> { }
+
+    internal class Handler : IRequestHandler<Command, Result>
+    {
+        private readonly AppDbContext _context;
+
+        public Handler(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<Result> Handle(
+            Command request, CancellationToken cancellationToken)
+        {
+            var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.ResumePhoto == request.ResumeId);
+
+            if (resume is null)
+                return Result.Fail("Резюме не найден.");
+
+            resume.IsApproved = true;
+
+            await _context.SaveChangesAsync();
+
+            return Result.Ok();
+        }
+    }
 }

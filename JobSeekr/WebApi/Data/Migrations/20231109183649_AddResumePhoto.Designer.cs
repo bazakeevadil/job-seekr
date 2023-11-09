@@ -12,8 +12,8 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231031142555_AddedEntitiesResume")]
-    partial class AddedEntitiesResume
+    [Migration("20231109183649_AddResumePhoto")]
+    partial class AddResumePhoto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,20 +35,24 @@ namespace WebApi.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Degree")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("From")
+                    b.Property<DateTime?>("From")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<long>("ResumeId")
                         .HasColumnType("bigint");
@@ -73,30 +77,40 @@ namespace WebApi.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LanguageLevel")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Links")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("ProgrammingLanguage")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Skills")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -111,6 +125,20 @@ namespace WebApi.Migrations
                     b.ToTable("Resumes");
                 });
 
+            modelBuilder.Entity("WebApi.Domain.Entities.ResumePhoto", b =>
+                {
+                    b.Property<long>("ResumeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("ResumeId");
+
+                    b.ToTable("ResumePhoto");
+                });
+
             modelBuilder.Entity("WebApi.Domain.Entities.User", b =>
                 {
                     b.Property<long>("Id")
@@ -122,19 +150,36 @@ namespace WebApi.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(150)")
+                        .UseCollation("SQL_Latin1_General_CP1_CI_AS");
 
                     b.Property<string>("HashPassword")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 228L,
+                            Email = "admin@gmail.com",
+                            HashPassword = "$2a$11$yRYiqMnt8346oKKw8vc/lu7UGI3fYNJcwzspPnLu1CsQ2gfqAV5zW",
+                            IsBlocked = false,
+                            Role = 2
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Domain.Entities.WorkPeriod", b =>
@@ -147,21 +192,25 @@ namespace WebApi.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Employer")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("From")
+                    b.Property<DateTime?>("From")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Position")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<long>("ResumeId")
                         .HasColumnType("bigint");
@@ -196,6 +245,17 @@ namespace WebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApi.Domain.Entities.ResumePhoto", b =>
+                {
+                    b.HasOne("WebApi.Domain.Entities.Resume", "Resume")
+                        .WithOne("ResumePhoto")
+                        .HasForeignKey("WebApi.Domain.Entities.ResumePhoto", "ResumeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resume");
+                });
+
             modelBuilder.Entity("WebApi.Domain.Entities.WorkPeriod", b =>
                 {
                     b.HasOne("WebApi.Domain.Entities.Resume", null)
@@ -208,6 +268,8 @@ namespace WebApi.Migrations
             modelBuilder.Entity("WebApi.Domain.Entities.Resume", b =>
                 {
                     b.Navigation("EducationPeriods");
+
+                    b.Navigation("ResumePhoto");
 
                     b.Navigation("WorkPeriods");
                 });

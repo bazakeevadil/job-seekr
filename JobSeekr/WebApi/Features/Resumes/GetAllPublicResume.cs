@@ -26,7 +26,7 @@ public class GetAllPublicResumeEndpoint : ICarterModule
             .WithTags("Resume Endpoints")
             .WithSummary("Получение публичных резюме")
             .WithDescription("Получает публичные резюме всех пользователей")
-            .RequireAuthorization("Admin")
+            .AllowAnonymous()
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)
             .WithOpenApi();

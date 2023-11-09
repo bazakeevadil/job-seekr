@@ -55,4 +55,5 @@ public class Resume
 
     //Пользователь, связанный с резюме.
     public User? User { get; set; }
+    public ResumePhoto? ResumePhoto { get; set; }
 }

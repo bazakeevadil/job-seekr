@@ -31,7 +31,7 @@ public class GetAllResumesOfOneUserEndpoint : ICarterModule
                 return Results.Ok(result.Value);
             })
             .WithTags("Resume Endpoints")
-            .WithSummary("Получение текущего пользователя резюме")
+            .WithSummary("Получение резюме текущего пользователя")
             .WithDescription("Получает все резюме текушего пользователя")
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)

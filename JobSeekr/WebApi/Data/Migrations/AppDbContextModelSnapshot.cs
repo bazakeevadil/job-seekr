@@ -122,6 +122,20 @@ namespace WebApi.Migrations
                     b.ToTable("Resumes");
                 });
 
+            modelBuilder.Entity("WebApi.Domain.Entities.ResumePhoto", b =>
+                {
+                    b.Property<long>("ResumeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("ResumeId");
+
+                    b.ToTable("ResumePhoto");
+                });
+
             modelBuilder.Entity("WebApi.Domain.Entities.User", b =>
                 {
                     b.Property<long>("Id")
@@ -159,7 +173,7 @@ namespace WebApi.Migrations
                         {
                             Id = 228L,
                             Email = "admin@gmail.com",
-                            HashPassword = "$2a$11$2rZwEv2RYly1s8m7Gr9zw.24V0jHy52GUkg8wYQT8hBTgqOqkuSQW",
+                            HashPassword = "$2a$11$yRYiqMnt8346oKKw8vc/lu7UGI3fYNJcwzspPnLu1CsQ2gfqAV5zW",
                             IsBlocked = false,
                             Role = 2
                         });
@@ -228,6 +242,17 @@ namespace WebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApi.Domain.Entities.ResumePhoto", b =>
+                {
+                    b.HasOne("WebApi.Domain.Entities.Resume", "Resume")
+                        .WithOne("ResumePhoto")
+                        .HasForeignKey("WebApi.Domain.Entities.ResumePhoto", "ResumeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resume");
+                });
+
             modelBuilder.Entity("WebApi.Domain.Entities.WorkPeriod", b =>
                 {
                     b.HasOne("WebApi.Domain.Entities.Resume", null)
@@ -240,6 +265,8 @@ namespace WebApi.Migrations
             modelBuilder.Entity("WebApi.Domain.Entities.Resume", b =>
                 {
                     b.Navigation("EducationPeriods");
+
+                    b.Navigation("ResumePhoto");
 
                     b.Navigation("WorkPeriods");
                 });

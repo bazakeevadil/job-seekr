@@ -55,6 +55,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>().Navigation(u => u.Resumes).AutoInclude();
         modelBuilder.Entity<Resume>().Navigation(r => r.WorkPeriods).AutoInclude();
         modelBuilder.Entity<Resume>().Navigation(r => r.EducationPeriods).AutoInclude();
+        modelBuilder.Entity<ResumePhoto>().HasKey(r => r.ResumeId);
 
         var user = modelBuilder.Entity<User>();
         // Уникальный индекс для поля Email

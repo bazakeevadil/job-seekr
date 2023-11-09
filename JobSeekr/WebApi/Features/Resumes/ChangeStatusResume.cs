@@ -1,9 +1,9 @@
 ﻿namespace WebApi.Features.Resumes;
 
 /// <summary>
-/// Класс, представляющий точку входа для установки публичного статуса резюме пользователя.
+/// Класс, представляющий точку входа для установки статуса резюме пользователя.
 /// </summary>
-public class PublicResumeEndpoint : ICarterModule
+public class ChangeStatusResumeEndpoint : ICarterModule
 {
     /// <summary>
     /// Добавляет маршруты для API.
@@ -11,17 +11,18 @@ public class PublicResumeEndpoint : ICarterModule
     /// <param name="app">Построитель маршрутов.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPatch("api/resume/public",
-        async (IMediator mediator, HttpContext httpContext, long id) =>
+        app.MapPatch("api/resume/status/{id}",
+        async (IMediator mediator, HttpContext httpContext, long id, Status status) =>
         {
             var userIdString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             _ = long.TryParse(userIdString, out var userId);
 
-            var request = new PublicResume.Command
+            var request = new ChangeStatusResume.Command
             {
                 Id = id,
                 UserId = userId,
+                Status = status,
             };
 
             var result = await mediator.Send(request);
@@ -40,28 +41,30 @@ public class PublicResumeEndpoint : ICarterModule
 }
 
 /// <summary>
-/// Класс, представляющий команду для установки резюме в публичный режим.
+/// Класс, представляющий команду для установки статуса резюме.
 /// </summary>
-public class PublicResume
+public class ChangeStatusResume
 {
     /// <summary>
-    /// Команда для установки публичного статуса резюме пользователя.
+    /// Команда для установки статуса резюме пользователя.
     /// </summary>
     public record Command : IRequest<Result>
     {
-        //Идентификатор резюме пользователя для установки публичного статуса.
+        //Идентификатор резюме пользователя для установки статуса.
         public long Id { get; init; }
-        //Идентификатор пользователя, чей резюме будет установлено публичным.
+        //Идентификатор пользователя.
         public required long UserId { get; init; }
+        //Статус резюме.
+        public Status Status { get; init; }
     }
 
     /// <summary>
-    /// Валидатор команды установки публичного статуса резюме пользователя.
+    /// Валидатор команды установки статуса резюме пользователя.
     /// </summary>
     public class Validator : AbstractValidator<Command> { }
 
     /// <summary>
-    /// Обработчик команды установки публичного статуса резюме пользователя.
+    /// Обработчик команды установки статуса резюме пользователя.
     /// </summary>
     internal class Handler : IRequestHandler<Command, Result>
     {
@@ -73,9 +76,9 @@ public class PublicResume
         }
 
         /// <summary>
-        /// Обрабатывает команду установки публичного статуса резюме пользователя.
+        /// Обрабатывает команду установки статуса резюме пользователя.
         /// </summary>
-        /// <param name="request">Команда установки публичного статуса резюме пользователя.</param>
+        /// <param name="request">Команда установки статуса резюме пользователя.</param>
         /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result> Handle(
             Command request, CancellationToken cancellationToken)
@@ -84,10 +87,15 @@ public class PublicResume
             && r.UserId == request.UserId);
 
             if (resume is null)
-                return Result.Fail("Резюме не найден.");
+                return Result.Fail("Резюме не найдено.");
 
+            if (!resume.IsApproved )
+                return Result.Fail("Резюме все еще на проверке.");
 
-            resume.Status = Status.Public;
+            if (request.Status == Status.Pending)
+                return Result.Fail("Нельзя установить статус 'в ожидании'.");
+
+            resume.Status = request.Status;
 
             await _context.SaveChangesAsync();
 
