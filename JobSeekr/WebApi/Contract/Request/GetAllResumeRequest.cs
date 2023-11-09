@@ -2,6 +2,9 @@
 
 namespace WebApi.Contract.Request;
 
+/// <summary>
+/// Запрос на получение резюме.
+/// </summary>
 public record GetAllResumeRequest
 {
     public long Id { get; init; }

@@ -1,5 +1,8 @@
 ﻿namespace WebApi.Contract.Response;
 
+/// <summary>
+/// Ответ для получения периода обучения
+/// </summary>
 public record EducationPeriodResponse
 {
     public long Id { get; init; }

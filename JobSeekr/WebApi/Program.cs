@@ -49,6 +49,8 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseSerilogRequestLogging();
+
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapCarter();

@@ -2,6 +2,11 @@
 
 namespace WebApi.Shared.Behaviors;
 
+/// <summary>
+/// Поведение конвейера валидации запросов.
+/// </summary>
+/// <typeparam name="TRequest">Тип запроса.</typeparam>
+/// <typeparam name="TResponse">Тип ответа.</typeparam>
 public class ValidationPipelineBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
@@ -9,11 +14,23 @@ public class ValidationPipelineBehavior<TRequest, TResponse>
 {
     private readonly IValidator<TRequest> _validator;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="ValidationPipelineBehavior{TRequest, TResponse}"/>.
+    /// </summary>
+    /// <param name="validator">Валидатор запросов.</param>
     public ValidationPipelineBehavior(IValidator<TRequest> validator)
     {
         _validator = validator;
     }
 
+    /// <summary>
+    /// Обрабатывает запрос.
+    /// </summary>
+    /// <param name="request">Запрос для обработки.</param>
+    /// <param name="next">Делегат для вызова следующего обработчика в цепочке.</param>
+    /// <param name="cancellationToken">Токен отмены для отмены операции.</param>
+    /// <returns>Результат обработки запроса.</returns>
+    /// <exception cref="Exception">Результат проверки не является поддерживаемым типом.</exception>
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,

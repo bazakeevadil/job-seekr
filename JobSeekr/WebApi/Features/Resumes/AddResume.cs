@@ -5,8 +5,15 @@ using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
 
+/// <summary>
+/// Класс, представляющий точку входа для добавления резюме.
+/// </summary>
 public class AddResumeEndpoint : ICarterModule
 {
+    /// <summary>
+    /// Добавляет маршрут для обработки POST-запросов по добавлению резюме. 
+    /// </summary>
+    /// <param name="app">Построитель маршрутов.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("api/resume",
@@ -36,6 +43,9 @@ public class AddResumeEndpoint : ICarterModule
     }
 }
 
+/// <summary>
+/// Класс, представляющий запрос на добавление резюме.
+/// </summary>
 public static class AddResume
 {
     public record Command : IRequest<Result<ResumeResponse>>
@@ -53,8 +63,12 @@ public static class AddResume
         public List<WorkPeriodResponse> WorkPeriods { get; init; } = new();
     }
 
+    /// <summary>
+    /// Валидатор запроса на добавление резюме.
+    /// </summary>
     public class Validator : AbstractValidator<Command>
     {
+        //Конструктор валидатора.
         public Validator()
         {
             RuleFor(c => c.FullName).NotNull().NotEmpty();
@@ -66,6 +80,9 @@ public static class AddResume
         }
     }
 
+    /// <summary>
+    /// Обработчик запроса на добавление резюме.
+    /// </summary>
     internal class Handler : IRequestHandler<Command, Result<ResumeResponse>>
     {
         private readonly AppDbContext _appDbContext;
@@ -75,6 +92,11 @@ public static class AddResume
             _appDbContext = appDbContext;
         }
 
+        /// <summary>
+        /// Обрабатывает запрос на добавление резюме.
+        /// </summary>
+        /// <param name="request">Запрос на добавление резюме.</param>
+        /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result<ResumeResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await _appDbContext.Users.FindAsync(request.UserId);
@@ -85,7 +107,7 @@ public static class AddResume
             var resume = new Resume
             {
                 Status = Status.Pending,
-                IsRejected = true,
+                IsApproved = false,
                 ProgrammingLanguage = request.ProgrammingLanguage,
                 FullName = request.FullName,
                 LanguageLevel = request.LanguageLevel,

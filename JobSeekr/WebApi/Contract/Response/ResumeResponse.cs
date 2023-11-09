@@ -1,10 +1,13 @@
 ﻿namespace WebApi.Contract.Response;
 
+/// <summary>
+/// Ответ для получения резюме
+/// </summary>
 public record ResumeResponse
 {
     public long Id { get; init; }
     public long UserId { get; init; }
-    public required bool IsRejected { get; set; }
+    public required bool IsApproved { get; set; }
     public required string FullName { get; init; }
     public required string ProgrammingLanguage { get; init; }
     public required string LanguageLevel { get; init; }

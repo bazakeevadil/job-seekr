@@ -4,8 +4,15 @@ using WebApi.Contract.Response;
 
 namespace WebApi.Features.Auth;
 
+/// <summary>
+/// Endpoint для регистрации пользователя.
+/// </summary>
 public class RegisterUserEndpoint : ICarterModule
 {
+    /// <summary>
+    /// Добавляет маршруты к конечной точке.
+    /// </summary>
+    /// <param name="app">Построитель конечных точек</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("api/auth/register",
@@ -30,27 +37,42 @@ public class RegisterUserEndpoint : ICarterModule
     }
 }
 
+/// <summary>
+/// Команда для регистрации пользователя.
+/// </summary>
 public static class RegisterUser
 {
     public record Command : IRequest<Result<UserResponse>>
     {
+        /// <summary>
+        /// Получает или устанавливает адрес электронной почты пользователя.
+        /// </summary>
         public required string Email { get; init; }
 
+        /// <summary>
+        /// Получает или устанавливает пароль пользователя.
+        /// </summary>
         public required string Password { get; init; }
     }
 
+    /// <summary>
+    /// Валидатор для команды регистрации пользователя.
+    /// </summary>
     public class Validator : AbstractValidator<Command>
     {
+        //Конструктор валидатора.
         public Validator()
         {
             RuleFor(c => c).NotNull();
 
             RuleFor(c => c.Email)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .Length(1, 200)
                 .EmailAddress().WithMessage("Почта не соответствует формату.");
 
             RuleFor(c => c.Password)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .MinimumLength(4).WithMessage("Пароль должен содержать не меньше 4 символов.")
                 .Matches(@"[0-9]+").WithMessage("Пароль должен содержать цифры.")
@@ -58,6 +80,9 @@ public static class RegisterUser
         }
     }
 
+    /// <summary>
+    /// Обработчик для команды регистрации пользователя.
+    /// </summary>
     internal class Handler : IRequestHandler<Command, Result<UserResponse>>
     {
         private readonly AppDbContext _appDbContext;
@@ -69,8 +94,15 @@ public static class RegisterUser
             _logger = logger;
         }
 
+        /// <summary>
+        /// Обрабатывает команду регистрации пользователя.
+        /// </summary>
+        /// <param name="request">Команда регистрации пользователя.</param>
+        /// <param name="cancellationToken">Токен отмены для операции</param>
+        /// <returns>Результат операции регистрации пользователя.</returns>
         public async Task<Result<UserResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation(request.Email, request.Password);
             var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user is not null)

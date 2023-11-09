@@ -1,10 +1,18 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace WebApi.Features.Resumes;
 
+/// <summary>
+/// Класс, представляющий модуль для установки резюме в приватный режим.
+/// </summary>
 public class PrivateResumeEndpoint : ICarterModule
 {
+    /// <summary>
+    /// Метод для добавления маршрутов.
+    /// </summary>
+    /// <param name="app">Построитель конечных точек маршрута.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPatch("api/resume/private",
@@ -35,25 +43,48 @@ public class PrivateResumeEndpoint : ICarterModule
     }
 }
 
+/// <summary>
+/// Класс, представляющий команду для установки резюме в приватный режим.
+/// </summary>
 public class PrivateResume
 {
+    /// <summary>
+    /// Запись команды для установки резюме в приватный режим.
+    /// </summary>
     public record Command : IRequest<Result>
     {
+        //Уникальный идентификатор резюме.
         public long Id { get; init; }
+        //Идентификатор пользователя.
         public required long UserId { get; init; }
     }
 
+    /// <summary>
+    /// Валидатор команды для установки резюме в приватный режим.
+    /// </summary>
     public class Validator : AbstractValidator<Command> { }
 
+    /// <summary>
+    /// Обработчик команды для установки резюме в приватный режим.
+    /// </summary>
     internal class Handler : IRequestHandler<Command, Result>
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Конструктор обработчика команды для установки резюме в приватный режим.
+        /// </summary>
+        /// <param name="context">Контекст приложения.</param>
         public Handler(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Метод обработки команды для установки резюме в приватный режим.
+        /// </summary>
+        /// <param name="request">Команда для установки резюме в приватный режим.</param>
+        /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result> Handle(
             Command request, CancellationToken cancellationToken)
         {

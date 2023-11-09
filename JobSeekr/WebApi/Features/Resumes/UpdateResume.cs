@@ -1,11 +1,17 @@
 ﻿using FluentValidation;
 using System.Security.Claims;
-using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
 
+/// <summary>
+/// Класс, представляющий точку входа для обновления резюме.
+/// </summary>
 public class UpdateResumeEndpoint : ICarterModule
 {
+    /// <summary>
+    /// Добавляет маршрут для обработки PATCH-запросов по обновлению резюме.
+    /// </summary>
+    /// <param name="app">Построитель маршрутов.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPatch("api/resume",
@@ -37,8 +43,14 @@ public class UpdateResumeEndpoint : ICarterModule
     }
 }
 
+/// <summary>
+/// Класс, представляющий запрос на обновление резюме.
+/// </summary>
 public static class UpdateResume
 {
+    /// <summary>
+    /// Команда для обновление резюме.
+    /// </summary>
     public record Command : IRequest<Result>
     {
         public long Id { get; init; }
@@ -85,8 +97,12 @@ public static class UpdateResume
         public DateTime? To { get; init; }
     }
 
+    /// <summary>
+    /// Валидатор запроса на обновление резюме.
+    /// </summary>
     public class Validator : AbstractValidator<Command>
     {
+        //Конструктор валидатора.
         public Validator()
         {
             RuleFor(c => c.Props).NotNull();
@@ -125,6 +141,9 @@ public static class UpdateResume
         }
     }
 
+    /// <summary>
+    /// Обработчик запроса на обновление резюме.
+    /// </summary>
     internal class Handler : IRequestHandler<Command, Result>
     {
         private readonly AppDbContext _context;
@@ -134,6 +153,11 @@ public static class UpdateResume
             _context = context;
         }
 
+        /// <summary>
+        /// Обрабатывает запрос на обновление резюме.
+        /// </summary>
+        /// <param name="request">Запрос на обновление резюме.</param>
+        /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result> Handle(
             Command request, CancellationToken cancellationToken)
         {

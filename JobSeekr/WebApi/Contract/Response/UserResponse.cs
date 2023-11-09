@@ -1,5 +1,8 @@
 ﻿namespace WebApi.Contract.Response;
 
+/// <summary>
+/// Ответ для получения пользователя.
+/// </summary>
 public record UserResponse
 {
     public long Id { get; init; }

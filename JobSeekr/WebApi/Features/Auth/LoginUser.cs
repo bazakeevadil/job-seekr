@@ -8,8 +8,15 @@ using WebApi.Shared.Helpers;
 
 namespace WebApi.Features.Auth;
 
+/// <summary>
+/// Endpoint авторизации пользователя
+/// </summary>
 public class LoginUserEndpoint : ICarterModule
 {
+    /// <summary>
+    /// Добавляет маршруты для модуля авторизации.
+    /// </summary>
+    /// <param name="app">Построитель маршрутов.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("api/auth/login",
@@ -34,17 +41,32 @@ public class LoginUserEndpoint : ICarterModule
     }
 }
 
+/// <summary>
+/// Класс, представляющий запрос на авторизацию пользователя.
+/// </summary>
 public static class LoginUser
 {
+    /// <summary>
+    /// Запрос на авторизацию пользователя.
+    /// </summary>
     public record Query : IRequest<Result<string>>
     {
+        /// <summary>
+        /// Электронная почта пользователя.
+        /// </summary>
         public required string Email { get; init; }
-
+        /// <summary>
+        /// Пароль пользователя.
+        /// </summary>
         public required string Password { get; init; }
     }
 
+    /// <summary>
+    /// Валидатор запроса на авторизацию пользователя.
+    /// </summary>
     public class Validator : AbstractValidator<Query>
     {
+        //Конструктор валидатора.
         public Validator()
         {
             RuleFor(c => c).NotNull();
@@ -59,6 +81,9 @@ public static class LoginUser
         }
     }
 
+    /// <summary>
+    /// Обработчик запроса на авторизацию пользователя.
+    /// </summary>
     internal class Handler : IRequestHandler<Query, Result<string>>
     {
         private readonly AppDbContext _context;
@@ -70,6 +95,12 @@ public static class LoginUser
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Обрабатывает запрос на авторизацию пользователя.
+        /// </summary>
+        /// <param name="request">Запрос на авторизацию пользователя.</param>
+        /// <param name="cancellationToken">Токен отмены операции.</param>
+        /// <returns>Результат авторизации с токеном доступа.</returns>
         public async Task<Result<string>> Handle(Query request, CancellationToken cancellationToken)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -89,6 +120,12 @@ public static class LoginUser
             return tokenString;
         }
 
+        /// <summary>
+        /// Генерирует строку JWT-токена на основе указанных утверждений и времени истечения срока действия.
+        /// </summary>
+        /// <param name="claims">Утверждения токена.</param>
+        /// <param name="exp">Время истечения срока действия токена.</param>
+        /// <returns>Строка JWT-токена.</returns>
         private string GetTokenString(List<Claim> claims, DateTime exp)
         {
             var key = _configuration["JWT_TOKEN"]

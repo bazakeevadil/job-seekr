@@ -7,8 +7,17 @@ using System.Text;
 
 namespace WebApi;
 
+/// <summary>
+/// Класс, предоставляющий статические методы для регистрации зависимостей.
+/// </summary>
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Регистрирует контекст базы данных в контейнере служб.
+    /// </summary>
+    /// <param name="services">Коллекция служб.</param>
+    /// <param name="configuration">Конфигурация приложения.</param>
+    /// <returns>Коллекция служб с зарегистрированным контекстом базы данных.</returns>
     public static IServiceCollection AddDbContext(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -20,6 +29,11 @@ public static class DependencyInjection
         return services;
     }
 
+    /// <summary>
+    /// Регистрирует MediatR в контейнере служб.
+    /// </summary>
+    /// <param name="services">Коллекция служб.</param>
+    /// <returns>Коллекция служб с зарегистрированным MediatR.</returns>
     public static IServiceCollection AddMediatr(
         this IServiceCollection services)
     {
@@ -32,6 +46,13 @@ public static class DependencyInjection
         return services;
     }
 
+    /// <summary>
+    /// Регистрирует авторизацию в контейнере служб.
+    /// </summary>
+    /// <param name="services">Коллекция служб.</param>
+    /// <param name="configuration">Конфигурация приложения.</param>
+    /// <returns>Коллекция служб с зарегистрированной авторизацией.</returns>
+    /// <exception cref="Exception">Секретный ключ для генерации JWT не найден в файле кофигурации.</exception>
     public static IServiceCollection AddAuth(
        this IServiceCollection services,
        IConfiguration configuration)
@@ -71,6 +92,11 @@ public static class DependencyInjection
         return services;
     }
 
+    /// <summary>
+    /// Регистрирует Swagger в контейнере служб.
+    /// </summary>
+    /// <param name="services">Коллекция служб.</param>
+    /// <returns>Коллекция служб с зарегистрированным Swagger.</returns>
     public static IServiceCollection AddSwagger(
        this IServiceCollection services)
     {
@@ -109,6 +135,11 @@ public static class DependencyInjection
         return services;
     }
 
+    /// <summary>
+    /// Регистрирует CORS политику в контейнере служб.
+    /// </summary>
+    /// <param name="services">Коллекция служб.</param>
+    /// <returns>Коллекция служб с зарегистрированным CORS.</returns>
     public static IServiceCollection AddAnyCors(
        this IServiceCollection services)
     {

@@ -4,8 +4,15 @@ using WebApi.Contract.Response;
 
 namespace WebApi.Features.Resumes;
 
+/// <summary>
+/// Класс, представляющий точку входа для получения всех своих резюме.
+/// </summary>
 public class GetAllResumesOfOneUserEndpoint : ICarterModule
 {
+    /// <summary>
+    /// Добавляет маршрут для обработки GET-запросов по получению всех резюме текушего пользователя.
+    /// </summary>
+    /// <param name="app">Построитель маршрутов.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("api/resume/own",
@@ -36,15 +43,27 @@ public class GetAllResumesOfOneUserEndpoint : ICarterModule
     }
 }
 
+/// <summary>
+/// Класс, представляющий запрос на получение всех резюме текущего пользователя.
+/// </summary>
 public static class GetAllResumesOfOneUser
 {
+    /// <summary>
+    /// Запись запроса на получение всех резюме текущего пользователя.
+    /// </summary>
     public record Query : IRequest<Result<List<ResumeResponse>>>
     {
         public required long UserId { get; init; }
     }
 
+    /// <summary>
+    /// Валидатор запроса на получение всех резюме текущего пользователя.
+    /// </summary>
     public class Validator : AbstractValidator<Query> { }
 
+    /// <summary>
+    ///  Обработчик запроса на получение всех резюме текущего пользователя.
+    /// </summary>
     internal class Handler : IRequestHandler<Query, Result<List<ResumeResponse>>>
     {
         private readonly AppDbContext _context;
@@ -54,6 +73,11 @@ public static class GetAllResumesOfOneUser
             _context = context;
         }
 
+        /// <summary>
+        /// Обрабатывает запрос на получение всех резюме текущего пользователя.
+        /// </summary>
+        /// <param name="request">Запрос на получение всех резюме текущего пользователя.</param>
+        /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result<List<ResumeResponse>>> Handle(Query request, CancellationToken cancellationToken)
         {
             var resumes = await _context.Resumes.FirstOrDefaultAsync(r => r.UserId == request.UserId);

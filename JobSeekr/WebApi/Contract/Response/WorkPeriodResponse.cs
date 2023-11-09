@@ -1,5 +1,8 @@
 ﻿namespace WebApi.Contract.Response;
 
+/// <summary>
+/// Ответ на получения периода работы.
+/// </summary>
 public record WorkPeriodResponse
 {
     public long Id { get; init; }

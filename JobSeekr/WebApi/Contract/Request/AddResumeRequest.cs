@@ -2,6 +2,9 @@
 
 namespace WebApi.Contract.Request;
 
+/// <summary>
+/// Запрос на добавление резюме.
+/// </summary>
 public record AddResumeRequest
 {
     public required string FullName { get; init; }

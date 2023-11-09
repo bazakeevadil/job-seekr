@@ -43,7 +43,7 @@ namespace WebApi.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("From")
+                    b.Property<DateTime?>("From")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -87,7 +87,7 @@ namespace WebApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("IsRejected")
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
                     b.Property<string>("LanguageLevel")
@@ -133,7 +133,8 @@ namespace WebApi.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(150)")
+                        .UseCollation("SQL_Latin1_General_CP1_CI_AS");
 
                     b.Property<string>("HashPassword")
                         .IsRequired()
@@ -148,6 +149,9 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
 
                     b.HasData(
@@ -155,7 +159,7 @@ namespace WebApi.Migrations
                         {
                             Id = 228L,
                             Email = "admin@gmail.com",
-                            HashPassword = "$2a$11$78Fswfswrabn7xXav3P6ce1dgthPTtvQJeGjCEzMJpfBi76BPkSVy",
+                            HashPassword = "$2a$11$2rZwEv2RYly1s8m7Gr9zw.24V0jHy52GUkg8wYQT8hBTgqOqkuSQW",
                             IsBlocked = false,
                             Role = 2
                         });
@@ -183,7 +187,7 @@ namespace WebApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("From")
+                    b.Property<DateTime?>("From")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Position")
