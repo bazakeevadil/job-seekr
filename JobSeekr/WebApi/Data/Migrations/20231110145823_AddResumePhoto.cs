@@ -11,17 +11,19 @@ namespace WebApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ResumePhoto",
+                name: "ResumePhotos",
                 columns: table => new
                 {
                     ResumeId = table.Column<long>(type: "bigint", nullable: false),
-                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
+                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResumePhoto", x => x.ResumeId);
+                    table.PrimaryKey("PK_ResumePhotos", x => x.ResumeId);
                     table.ForeignKey(
-                        name: "FK_ResumePhoto_Resumes_ResumeId",
+                        name: "FK_ResumePhotos_Resumes_ResumeId",
                         column: x => x.ResumeId,
                         principalTable: "Resumes",
                         principalColumn: "Id",
@@ -33,14 +35,14 @@ namespace WebApi.Migrations
                 keyColumn: "Id",
                 keyValue: 228L,
                 column: "HashPassword",
-                value: "$2a$11$yRYiqMnt8346oKKw8vc/lu7UGI3fYNJcwzspPnLu1CsQ2gfqAV5zW");
+                value: "$2a$11$V0JHBQBRANy8Y6zUg/nD9u75FkNxI6zeuMvT62qymB1sxdPFS83Gu");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ResumePhoto");
+                name: "ResumePhotos");
 
             migrationBuilder.UpdateData(
                 table: "Users",

@@ -1,0 +1,80 @@
+version: '3.4'
+
+services:
+
+  webapi:
+    env_file: ".env"
+    container_name: "webapi"
+    image: adilka/jobseekr
+    volumes:
+        - "aspnet_keys_volume:/root/.aspnet/DataProtection-Keys"
+    ports:
+      - "5000:80"
+    networks:
+      - "jobseekr"
+    restart: unless-stopped
+    depends_on:
+      mssql:
+        condition: service_healthy
+
+  mssql:
+    container_name: "mssql"
+    image: mcr.microsoft.com/mssql/server
+    ports:
+      - "7070:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    volumes:
+      - "mssql_volume:/var/opt/mssql"
+    networks:
+      - "jobseekr"
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-Usa", "-P${MSSQL_SA_PASSWORD}", "-Q", "select 1"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  seq:
+    container_name: "seq"
+    image: "datalust/seq"
+    ports:
+      - "10110:80"
+    environment:
+      ACCEPT_EULA: "Y"
+    networks:
+      - "jobseekr"
+    volumes:
+      - seq_volume:/data
+    mem_limit: "4294967296"
+    memswap_limit: "4294967296"
+    restart: unless-stopped
+
+  ngrok:
+    container_name: "ngrok"
+    hostname: "ngrok"
+    image: ngrok/ngrok:latest
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - 4040:4040
+    networks:
+      - "jobseekr"
+    restart: unless-stopped
+
+volumes:
+  mssql_volume:
+    name: "mssql_volume"
+  aspnet_keys_volume:
+    name: "aspnet_keys_volume"
+  seq_volume:
+    name: "seq_volume"
+
+networks:
+  jobseekr:
+    name: "jobseekr"

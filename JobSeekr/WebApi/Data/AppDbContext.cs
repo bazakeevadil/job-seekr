@@ -16,7 +16,7 @@ public class AppDbContext : DbContext
     /// </summary>
     public DbSet<User> Users => Set<User>();
 
-    /// <summary>
+    /// <summary>\
     /// Набор данных резюме.
     /// </summary>
     public DbSet<Resume> Resumes => Set<Resume>();
@@ -55,6 +55,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>().Navigation(u => u.Resumes).AutoInclude();
         modelBuilder.Entity<Resume>().Navigation(r => r.WorkPeriods).AutoInclude();
         modelBuilder.Entity<Resume>().Navigation(r => r.EducationPeriods).AutoInclude();
+
+        modelBuilder.Entity<ResumePhoto>().ToTable("ResumePhotos");
         modelBuilder.Entity<ResumePhoto>().HasKey(r => r.ResumeId);
 
         var user = modelBuilder.Entity<User>();

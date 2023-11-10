@@ -76,9 +76,12 @@ public static class GetAllResumesOfOneUser
         /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result<List<ResumeResponse>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var resumes = await _context.Resumes.Where(r => r.UserId == request.UserId).AsNoTracking().ToListAsync();
+            var user = await _context.Users.FindAsync(request.UserId);
+
+            if (user is null)
+                return Result.Fail<List<ResumeResponse>>("Пользователь не найден.");
      
-            var response = resumes.Adapt<List<ResumeResponse>>();
+            var response = user.Resumes.Adapt<List<ResumeResponse>>();
 
             return response;
         }

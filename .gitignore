@@ -10,6 +10,10 @@
 *.userosscache
 *.sln.docstates
 
+#Secrets
+*.env
+*/ngrok.yml
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -27,6 +31,7 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
+build/
 [Bb]in/
 [Oo]bj/
 [Ll]og/

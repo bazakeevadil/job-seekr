@@ -33,17 +33,13 @@ builder.Services.AddScoped(
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseCors();
 
 app.UseSerilogRequestLogging();
-
-app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -53,5 +49,15 @@ app.UseSerilogRequestLogging();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapCarter();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+}
 
 app.Run();

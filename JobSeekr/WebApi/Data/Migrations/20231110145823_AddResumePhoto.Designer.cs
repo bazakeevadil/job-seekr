@@ -12,7 +12,7 @@ using WebApi.Data;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231109183649_AddResumePhoto")]
+    [Migration("20231110145823_AddResumePhoto")]
     partial class AddResumePhoto
     {
         /// <inheritdoc />
@@ -134,9 +134,19 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("ResumeId");
 
-                    b.ToTable("ResumePhoto");
+                    b.ToTable("ResumePhotos", (string)null);
                 });
 
             modelBuilder.Entity("WebApi.Domain.Entities.User", b =>
@@ -176,7 +186,7 @@ namespace WebApi.Migrations
                         {
                             Id = 228L,
                             Email = "admin@gmail.com",
-                            HashPassword = "$2a$11$yRYiqMnt8346oKKw8vc/lu7UGI3fYNJcwzspPnLu1CsQ2gfqAV5zW",
+                            HashPassword = "$2a$11$V0JHBQBRANy8Y6zUg/nD9u75FkNxI6zeuMvT62qymB1sxdPFS83Gu",
                             IsBlocked = false,
                             Role = 2
                         });

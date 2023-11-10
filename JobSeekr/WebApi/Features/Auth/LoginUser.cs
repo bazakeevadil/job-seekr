@@ -1,7 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using WebApi.Domain.Entities;
 using WebApi.Shared.Helpers;
 
 namespace WebApi.Features.Auth;
