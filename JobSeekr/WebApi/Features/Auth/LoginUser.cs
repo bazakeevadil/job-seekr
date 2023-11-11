@@ -63,7 +63,9 @@ public static class LoginUser
     /// </summary>
     public class Validator : AbstractValidator<Query>
     {
-        //Конструктор валидатора.
+        /// <summary>
+        /// Конструктор валидатора.
+        /// </summary>
         public Validator()
         {
             RuleFor(c => c).NotNull();

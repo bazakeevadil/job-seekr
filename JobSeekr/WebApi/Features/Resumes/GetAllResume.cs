@@ -1,20 +1,20 @@
 ﻿namespace WebApi.Features.Resumes;
 
 /// <summary>
-/// Класс, представляющий точку входа для получения всех публичных резюме.
+/// Класс, представляющий точку входа для получения всех резюме.
 /// </summary>
-public class GetAllPublicResumeEndpoint : ICarterModule
+public class GetAllResumeEndpoint : ICarterModule
 {
     /// <summary>
-    /// Добавляет маршрут для обработки GET-запросов по получению всех публичных резюме.
+    /// Добавляет маршрут для обработки GET-запросов по получению всех резюме.
     /// </summary>
     /// <param name="app">Построитель маршрутов.</param>
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("api/resume/public",
+        app.MapGet("api/resume",
             async (IMediator mediator) =>
             {
-                var query = new GetAllPublicResume.Query();
+                var query = new GetAllResume.Query();
 
                 var result = await mediator.Send(query);
 
@@ -24,9 +24,9 @@ public class GetAllPublicResumeEndpoint : ICarterModule
                 return Results.Ok(result.Value);
             })
             .WithTags("Resume Endpoints")
-            .WithSummary("Получение публичных резюме")
-            .WithDescription("Получает публичные резюме всех пользователей")
-            .AllowAnonymous()
+            .WithSummary("Получение всех резюме")
+            .WithDescription("Получает резюме всех пользователей")
+            .RequireAuthorization("Admin")
             .Produces<List<ResumeResponse>>(200)
             .Produces<Result>(400)
             .WithOpenApi();
@@ -34,22 +34,22 @@ public class GetAllPublicResumeEndpoint : ICarterModule
 }
 
 /// <summary>
-/// Класс, представляющий запрос на получение всех публичных резюме.
+/// Класс, представляющий запрос на получение всех резюме.
 /// </summary>
-public static class GetAllPublicResume
+public class GetAllResume
 {
     /// <summary>
-    /// Запись запроса на получение всех публичных резюме.
+    /// Запись запроса на получение всех резюме.
     /// </summary>
     public record Query : IRequest<Result<List<ResumeResponse>>> { }
 
     /// <summary>
-    /// Валидатор запроса на получение всех публичных резюме.
+    /// Валидатор запроса на получение всех резюме.
     /// </summary>
     public class Validator : AbstractValidator<Query> { }
 
     /// <summary>
-    ///  Обработчик запроса на получение всех публичных резюме.
+    ///  Обработчик запроса на получение всех резюме.
     /// </summary>
     internal class Handler : IRequestHandler<Query, Result<List<ResumeResponse>>>
     {
@@ -61,13 +61,13 @@ public static class GetAllPublicResume
         }
 
         /// <summary>
-        /// Обрабатывает запрос на получение всех публичных резюме.
+        /// Обрабатывает запрос на получение всех резюме.
         /// </summary>
-        /// <param name="request">Запрос на получение всех публичных резюме.</param>
+        /// <param name="request">Запрос на получение всех резюме.</param>
         /// <param name="cancellationToken">Токен отмены операции.</param>
         public async Task<Result<List<ResumeResponse>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var resumes = await _context.Resumes.Where(r => r.Status == Status.Public).AsNoTracking().ToListAsync();
+            var resumes = await _context.Resumes.AsNoTracking().ToListAsync();
 
             var response = resumes.Adapt<List<ResumeResponse>>();
 
